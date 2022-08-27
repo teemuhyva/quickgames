@@ -2,20 +2,20 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { TextInput, StyleSheet, View } from "react-native";
 import { Button, Dialog } from "react-native-elements";
-import { Player } from "../../App";
+import { Game } from "../../App";
 
 type PlayerDialogProps = {
     showDialog: Dispatch<SetStateAction<boolean>>
     showPlayerDialog: boolean
-    addPlayer: ({ player1, player2 }: Player) => void
+    addGame: ({ player1, player2, win }: Game) => void
     id: string
 }
 
-const PlayerDialog = ({ showDialog, showPlayerDialog, addPlayer, id }: PlayerDialogProps) => {
+const PlayerDialog = ({ showDialog, showPlayerDialog, addGame, id }: PlayerDialogProps) => {
 
     const [player1, setPlayer1] = useState('');
     const [player2, setPlayer2] = useState('');
-
+    const [win, setWin] = useState('')
 
     return (
         <Dialog isVisible={showPlayerDialog}>
@@ -34,7 +34,7 @@ const PlayerDialog = ({ showDialog, showPlayerDialog, addPlayer, id }: PlayerDia
             />
             <View style={styles.button_view}>
                 <View style={styles.button}>
-                    <Button title="Lisää" onPress={() => addPlayer({ id, player1, player2 })} />
+                    <Button title="Lisää" onPress={() => addGame({ id, player1, player2, win })} />
                 </View>
                 <View style={styles.button}>
                     <Button title="Peruuta" onPress={() => showDialog(false)} />

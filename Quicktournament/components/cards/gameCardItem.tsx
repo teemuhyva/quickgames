@@ -2,17 +2,17 @@ import React from "react";
 import { View, Text, StyleSheet, FlatList } from "react-native";
 import { Card } from 'react-native-paper'
 import { ListItem } from 'react-native-elements'
-import { Player } from "../../App";
+import { Game } from "../../App";
 
-type PlayerCardProps = {
-    playerList: Player[]
+type GameCardProps = {
+    gameslist: Game[]
 }
 
-const PlayerCard = ({ playerList }: PlayerCardProps) => {
+const PlayerCard = ({ gameslist }: GameCardProps) => {
 
     return (
         <FlatList
-            data={playerList}
+            data={gameslist}
             renderItem={({ item }) => (
                 <Card>
                     <Card.Content>
