@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "D:\\JAMK\\Oma_react\\Quicktournament\\android\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-pl\\values-pl.xml",
+            "outputFile": "D:\\JAMK\\Oma_react\\pooltournament\\Quicktournament\\android\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-pl\\values-pl.xml",
             "map": [
                 {
                     "source": "C:\\Users\\teemu\\.gradle\\caches\\transforms-3\\8b8d6a9e5f1dea3e6c09afa3ee45b294\\transformed\\appcompat-1.4.1\\res\\values-pl\\values-pl.xml",
