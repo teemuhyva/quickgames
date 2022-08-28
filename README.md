@@ -13,7 +13,8 @@ There will be time frame for billiard ( 14:00 - 16:00) and snooker (18:00 - 24:0
 
 Following functionalities will be added one by one. Mark task as done when pushed to main branch
 
-[ ] Create code base for react native app and add typescript support
+Project
+* [ ] Create code base for react native app and add typescript support
 
 MongoDb
   * [ ] Store new player
