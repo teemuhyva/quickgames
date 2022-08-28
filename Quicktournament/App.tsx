@@ -8,13 +8,7 @@ import SafeAreaView, { SafeAreaProvider } from 'react-native-safe-area-view';
 import PlayerDialog from './components/dialogs/PlayerDialog';
 import PlayerCard from './components/cards/PlayerCardItem';
 import { createPlayer, getPlayerWaitingList } from './Realm/Realm'
-
-export interface Game {
-  id: number;
-  player1: string;
-  player2: string;
-  played: boolean;
-}
+import GameItem from './components/cards/GameItem';
 
 export interface NewPlayer {
   id: number;
@@ -25,7 +19,6 @@ export interface NewPlayer {
 const App: () => ReactNode = () => {
 
   const [showPlayerDialog, setShowPlayerDialog] = useState(false);
-  const [game, setGame] = useState<Game>();
   const [playerWaitingList, setPlayerWaitingList] = useState<NewPlayer[]>([]);
 
   useEffect(() => {
@@ -34,7 +27,7 @@ const App: () => ReactNode = () => {
       const data = await getPlayerWaitingList();
 
       const players = [...playerWaitingList];
-      data.map((player: NewPlayer) => {
+      data.map((player: NewPlayer, idx) => {
         let p: NewPlayer = {
           id: player.id,
           playerName: player.playerName,
@@ -74,6 +67,10 @@ const App: () => ReactNode = () => {
     setShowPlayerDialog(!showPlayerDialog);
   };
 
+  const addGame = () => {
+
+  }
+
   return (
     <SafeAreaProvider>
       <SafeAreaView>
@@ -90,6 +87,13 @@ const App: () => ReactNode = () => {
               <Icon name="plus-circle" size={40} color="blue" />
             </View>
           </TouchableHighlight>
+          <View>
+            <Text style={styles.waitingText}>Käynnissä oleva peli</Text>
+          </View>
+          <GameItem playerWaitingList={playerWaitingList} />
+          <View>
+            <Text style={styles.waitingText}>Jonossa olevat pelaajat</Text>
+          </View>
           <PlayerCard playerWaitingList={playerWaitingList} />
         </View>
       </SafeAreaView>
@@ -116,6 +120,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
   },
+  waitingText: {
+    fontSize: 20,
+    textAlign: 'center',
+    marginBottom: 50
+  }
 });
 
 export default App;
