@@ -16,6 +16,23 @@ class Player {
     public wins: number;
 }
 
+class Game {
+    public static schema = {
+        name: "Game",
+        properties: {
+            id: "int",
+            player1: "string",
+            player2: "string",
+            finished: { type: 'bool', default: false }
+        },
+    };
+
+    public id: number;
+    public player1: string;
+    public player2: string;
+    public finished: boolean;
+}
+
 async function createPlayerRealm(player: NewPlayer) {
 
     const playerRealm = await Realm.open({
@@ -63,10 +80,37 @@ async function playerWaitingListRealm() {
     return players;
 }
 
+async function currentGame() {
+    const gameRealm = await Realm.open({
+        path: "Game",
+        schema: [Game],
+        schemaVersion: 2,
+        migration: (oldrealm, newrealm) => {
+            if (oldrealm.schemaVersion < 2) {
+                const oldPlayerObject = oldrealm.objects("Game");
+                const newPlayerObject = newrealm.objects("Game");
+
+                for (const obInx in oldPlayerObject) {
+                    const oldPlayer = oldPlayerObject[obInx];
+                    const newPlayer = newPlayerObject[obInx];
+                }
+            }
+        }
+    });
+
+    let runningGame = gameRealm.objects<Game>("Game").filtered("finished = false");
+    console.log(`Peli käynnissä:  ${runningGame.map((player) => `${player.player1}`)}`);
+    return runningGame;
+}
+
 export const getPlayerWaitingList = async () => {
     return await playerWaitingListRealm();
 }
 
 export const createPlayer = (player: Player) => {
     createPlayerRealm(player)
+}
+
+export const getCurrentGame = async () => {
+    return await currentGame();
 }

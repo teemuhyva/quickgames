@@ -67,10 +67,6 @@ const App: () => ReactNode = () => {
     setShowPlayerDialog(!showPlayerDialog);
   };
 
-  const addGame = () => {
-
-  }
-
   return (
     <SafeAreaProvider>
       <SafeAreaView>
