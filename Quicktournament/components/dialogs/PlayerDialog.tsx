@@ -2,39 +2,33 @@
 import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { TextInput, StyleSheet, View } from "react-native";
 import { Button, Dialog } from "react-native-elements";
-import { Player } from "../../App";
+import { Game, Player } from "../../App";
 
 type PlayerDialogProps = {
     showDialog: Dispatch<SetStateAction<boolean>>
     showPlayerDialog: boolean
-    addPlayer: ({ player1, player2 }: Player) => void
-    id: string
+    addPlayer: ({ id, playerName, wins }: Player) => void
+    id: number
 }
 
 const PlayerDialog = ({ showDialog, showPlayerDialog, addPlayer, id }: PlayerDialogProps) => {
 
-    const [player1, setPlayer1] = useState('');
-    const [player2, setPlayer2] = useState('');
-
+    const [playerName, setPlayerName] = useState('');
+    const [win, setWin] = useState('')
+    const wins: number = 0;
 
     return (
         <Dialog isVisible={showPlayerDialog}>
             <Dialog.Title title="Lisää pelaajat" />
             <TextInput
                 style={styles.input}
-                onChangeText={setPlayer1}
-                value={player1}
-                placeholder="Pelaaja 1"
-            />
-            <TextInput
-                style={styles.input}
-                onChangeText={setPlayer2}
-                value={player2}
-                placeholder="Pelaaja 2"
+                onChangeText={setPlayerName}
+                value={playerName}
+                placeholder="Pelaajan nimi"
             />
             <View style={styles.button_view}>
                 <View style={styles.button}>
-                    <Button title="Lisää" onPress={() => addPlayer({ id, player1, player2 })} />
+                    <Button title="Lisää" onPress={() => addPlayer({ id, playerName, wins })} />
                 </View>
                 <View style={styles.button}>
                     <Button title="Peruuta" onPress={() => showDialog(false)} />
