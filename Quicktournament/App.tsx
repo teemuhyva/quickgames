@@ -27,7 +27,7 @@ const App: () => ReactNode = () => {
       const data = await getPlayerWaitingList();
 
       const players = [...playerWaitingList];
-      data.map((player: NewPlayer, idx) => {
+      data.map((player: NewPlayer) => {
         let p: NewPlayer = {
           id: player.id,
           playerName: player.playerName,
@@ -35,10 +35,10 @@ const App: () => ReactNode = () => {
         }
 
         players.push(p);
-      })
+      });
 
       setPlayerWaitingList(players);
-    }
+    };
 
     fetchPlayerWaitingList();
 
