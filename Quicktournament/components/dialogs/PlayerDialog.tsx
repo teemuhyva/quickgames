@@ -1,20 +1,19 @@
 /* eslint-disable prettier/prettier */
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { TextInput, StyleSheet, View } from "react-native";
 import { Button, Dialog } from "react-native-elements";
-import { Game, Player } from "../../App";
+import { NewPlayer } from "../../App";
 
 type PlayerDialogProps = {
     showDialog: Dispatch<SetStateAction<boolean>>
     showPlayerDialog: boolean
-    addPlayer: ({ id, playerName, wins }: Player) => void
+    addPlayer: ({ id, playerName, wins }: NewPlayer) => void
     id: number
 }
 
 const PlayerDialog = ({ showDialog, showPlayerDialog, addPlayer, id }: PlayerDialogProps) => {
 
     const [playerName, setPlayerName] = useState('');
-    const [win, setWin] = useState('')
     const wins: number = 0;
 
     return (
@@ -51,7 +50,7 @@ const styles = StyleSheet.create({
     button: {
         width: 80,
         marginRight: 100,
-    }
+    },
 })
 
 export default PlayerDialog;

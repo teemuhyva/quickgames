@@ -45,13 +45,22 @@ const App: () => ReactNode = () => {
 
   }, []);
 
-  if (playerWaitingList.length === 0 || playerWaitingList === undefined) {
+  if (playerWaitingList === undefined) {
     return (
       <View style={{ flex: 1, padding: 20 }}>
         <Text>Ladataan pelaajat ja pelit</Text>
       </View>
     );
   }
+
+  const RegisteredPlayerInfo = () => {
+    return (
+      <View>
+        <Text style={styles.waitingText}>Pelaajia ei ole rekisteröitynyt</Text>
+      </View>
+    );
+  };
+
 
   const addPlayer = ({ id, playerName, wins }: NewPlayer) => {
     let player: NewPlayer = {
@@ -90,6 +99,11 @@ const App: () => ReactNode = () => {
           <View>
             <Text style={styles.waitingText}>Jonossa olevat pelaajat</Text>
           </View>
+          {
+            playerWaitingList.length === 0 && (
+              <RegisteredPlayerInfo />
+            )
+          }
           <PlayerCard playerWaitingList={playerWaitingList} />
         </View>
       </SafeAreaView>
