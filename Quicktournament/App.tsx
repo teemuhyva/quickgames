@@ -25,18 +25,51 @@ export interface Player {
 const App: () => ReactNode = () => {
 
   const [showPlayerDialog, setShowPlayerDialog] = useState(false);
-  const [gameslist, setGamesList] = useState<Game[]>([]);
+  const [playerWaitingList, setPlayerWaitingList] = useState<NewPlayer[]>([]);
+
+  useEffect(() => {
+
+    const fetchPlayerWaitingList = async () => {
+      const data = await getPlayerWaitingList();
+
+      const players = [...playerWaitingList];
+      data.map((player: NewPlayer) => {
+        let p: NewPlayer = {
+          id: player.id,
+          playerName: player.playerName,
+          wins: player.wins
+        }
+
+        players.push(p);
+      });
+
+      setPlayerWaitingList(players);
+    };
+
+    fetchPlayerWaitingList();
 
 
-  const initGamesList = () => {
-    const games = gameRealm.objects("Game");
-    console.log(games);
+  }, []);
+
+  if (playerWaitingList.length === 0 || playerWaitingList === undefined) {
+    return (
+      <View style={{ flex: 1, padding: 20 }}>
+        <Text>Ladataan pelaajat ja pelit</Text>
+      </View>
+    );
   }
 
-  const addGame = ({ id, player1, player2, win }: Game) => {
-    let game: Game;
-    const games = [...gameslist];
+  const addPlayer = ({ id, playerName, wins }: NewPlayer) => {
+    let player: NewPlayer = {
+      id: id,
+      playerName: playerName,
+      wins: wins
+    };
 
+    const players = [...playerWaitingList];
+    players.push(player)
+    setPlayerWaitingList(players);
+    createPlayer(player);
     setShowPlayerDialog(!showPlayerDialog);
 
     setGamesList(games);
@@ -50,8 +83,8 @@ const App: () => ReactNode = () => {
             <PlayerDialog
               showDialog={setShowPlayerDialog}
               showPlayerDialog={showPlayerDialog}
-              addGame={addGame}
-              id={gameslist.length.toString()} />
+              addPlayer={addPlayer}
+              id={playerWaitingList.length} />
           </View>
           <TouchableHighlight onPress={() => { setShowPlayerDialog(!showPlayerDialog); }}>
             <View>
@@ -84,6 +117,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
   },
+  waitingText: {
+    fontSize: 20,
+    textAlign: 'center',
+    marginBottom: 50
+  }
 });
 
 export default App;
