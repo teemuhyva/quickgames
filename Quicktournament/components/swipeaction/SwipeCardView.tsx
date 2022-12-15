@@ -4,7 +4,7 @@ import React from 'react';
 import { View, Text, TouchableWithoutFeedback, StyleSheet } from 'react-native';
 
 
-export const PlayerCardView = props => {
+export const PlayerCardView = (props: any) => {
     const { data } = props;
 
     return (
@@ -14,18 +14,13 @@ export const PlayerCardView = props => {
     );
 };
 
-export const SwipeShowDialogAction = props => {
+export const SwipeShowDialogAction = (props: any) => {
     const { rightActionActivated, swipeAnimatedValue, data } = props;
 
     return (
         <View>
             <TouchableWithoutFeedback onPress={() => console.log("touched")}>
-                <View style={styles.container}>
-                    <PlayerDialog
-                        showDialog={setShowPlayerDialog}
-                        showPlayerDialog={showPlayerDialog}
-                        addPlayer={addPlayer}
-                        id={playerWaitingList.length} />
+                <View>
                 </View>
             </TouchableWithoutFeedback>
         </View>

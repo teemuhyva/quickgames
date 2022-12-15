@@ -3,12 +3,11 @@ import React, { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-import { StyleSheet, TouchableHighlight, View } from 'react-native';
+import { StyleSheet, TouchableHighlight, View, Text } from 'react-native';
 import SafeAreaView, { SafeAreaProvider } from 'react-native-safe-area-view';
 import PlayerDialog from './components/dialogs/PlayerDialog';
-import PlayerCard from './components/cards/gameCardItem';
-import { useStateWithCallbackLazy } from 'use-state-with-callback';
-import { gameRealm } from './Realm/Realm';
+import PlayerCard from './components/cards/PlayerCardItem';
+import { createPlayer, getPlayerWaitingList } from './Realm/Realm';
 
 export interface Game {
   id: string;
@@ -17,8 +16,9 @@ export interface Game {
   win: string
 }
 
-export interface Player {
-  player: string;
+export interface NewPlayer {
+  id: number;
+  playerName: string;
   wins: number;
 }
 
@@ -51,7 +51,7 @@ const App: () => ReactNode = () => {
 
   }, []);
 
-  if (playerWaitingList.length === 0 || playerWaitingList === undefined) {
+  if (playerWaitingList === undefined) {
     return (
       <View style={{ flex: 1, padding: 20 }}>
         <Text>Ladataan pelaajat ja pelit</Text>
@@ -59,9 +59,18 @@ const App: () => ReactNode = () => {
     );
   }
 
-  const addPlayer = ({ id, playerName, wins }: NewPlayer) => {
+  const getOrCreatePlayerId = () => {
+    if (playerWaitingList.length == 0) {
+      return 1; //if playerlist is empty create id of 1
+    } else {
+      return playerWaitingList[playerWaitingList.length - 1].id + 1;
+    }
+
+  }
+
+  const addPlayer = (playerName: string, wins: number) => {
     let player: NewPlayer = {
-      id: id,
+      id: getOrCreatePlayerId(),
       playerName: playerName,
       wins: wins
     };
@@ -71,8 +80,6 @@ const App: () => ReactNode = () => {
     setPlayerWaitingList(players);
     createPlayer(player);
     setShowPlayerDialog(!showPlayerDialog);
-
-    setGamesList(games);
   };
 
   return (
@@ -91,7 +98,7 @@ const App: () => ReactNode = () => {
               <Icon name="plus-circle" size={40} color="blue" />
             </View>
           </TouchableHighlight>
-          <PlayerCard gameslist={gameslist} />
+          <PlayerCard playerWaitingList={playerWaitingList} />
         </View>
       </SafeAreaView>
     </SafeAreaProvider>
@@ -125,3 +132,4 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+
