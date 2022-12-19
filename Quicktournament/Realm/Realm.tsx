@@ -33,7 +33,7 @@ class Game {
     public finished: boolean;
 }
 
-async function createPlayerRealm(player: NewPlayer) {
+async function createPlayerRealm(player: Player) {
 
     const playerRealm = await Realm.open({
         path: "Player",
@@ -75,7 +75,7 @@ async function playerWaitingListRealm() {
         schemaVersion: 2
     });
 
-    let players = playerRealm.objects<Player>("Player");
+    const players = playerRealm.objects<Player>("Player");
     console.log(`Pelaajia kannassa ${players.map((player) => player.playerName)}`);
     return players;
 }

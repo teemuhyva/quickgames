@@ -7,8 +7,14 @@ import { StyleSheet, TouchableHighlight, View, Text } from 'react-native';
 import SafeAreaView, { SafeAreaProvider } from 'react-native-safe-area-view';
 import PlayerDialog from './components/dialogs/PlayerDialog';
 import PlayerCard from './components/cards/PlayerCardItem';
-import { createPlayer, getPlayerWaitingList } from './Realm/Realm'
-import GameItem from './components/cards/GameItem';
+import { createPlayer, getPlayerWaitingList } from './Realm/Realm';
+
+export interface Game {
+  id: string;
+  player1: string;
+  player2: string;
+  win: string
+}
 
 export interface NewPlayer {
   id: number;
@@ -45,7 +51,7 @@ const App: () => ReactNode = () => {
 
   }, []);
 
-  if (playerWaitingList.length === 0 || playerWaitingList === undefined) {
+  if (playerWaitingList === undefined) {
     return (
       <View style={{ flex: 1, padding: 20 }}>
         <Text>Ladataan pelaajat ja pelit</Text>
@@ -53,9 +59,18 @@ const App: () => ReactNode = () => {
     );
   }
 
-  const addPlayer = ({ id, playerName, wins }: NewPlayer) => {
+  const getOrCreatePlayerId = () => {
+    if (playerWaitingList.length == 0) {
+      return 1; //if playerlist is empty create id of 1
+    } else {
+      return playerWaitingList[playerWaitingList.length - 1].id + 1;
+    }
+
+  }
+
+  const addPlayer = (playerName: string, wins: number) => {
     let player: NewPlayer = {
-      id: id,
+      id: getOrCreatePlayerId(),
       playerName: playerName,
       wins: wins
     };
@@ -83,13 +98,6 @@ const App: () => ReactNode = () => {
               <Icon name="plus-circle" size={40} color="blue" />
             </View>
           </TouchableHighlight>
-          <View>
-            <Text style={styles.waitingText}>Käynnissä oleva peli</Text>
-          </View>
-          <GameItem playerWaitingList={playerWaitingList} />
-          <View>
-            <Text style={styles.waitingText}>Jonossa olevat pelaajat</Text>
-          </View>
           <PlayerCard playerWaitingList={playerWaitingList} />
         </View>
       </SafeAreaView>
@@ -124,3 +132,4 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+

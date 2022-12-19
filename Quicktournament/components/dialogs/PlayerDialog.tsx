@@ -1,24 +1,22 @@
 /* eslint-disable prettier/prettier */
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { TextInput, StyleSheet, View } from "react-native";
+import React, { Dispatch, SetStateAction, useState } from "react";
+import { StyleSheet, TextInput, View } from "react-native";
 import { Button, Dialog } from "react-native-elements";
-import { Game, Player } from "../../App";
 
 type PlayerDialogProps = {
     showDialog: Dispatch<SetStateAction<boolean>>
     showPlayerDialog: boolean
-    addPlayer: ({ id, playerName, wins }: Player) => void
+    addPlayer: (playerName: string, wins: number) => void
     id: number
 }
 
-const PlayerDialog = ({ showDialog, showPlayerDialog, addPlayer, id }: PlayerDialogProps) => {
+const PlayerDialog = (props: PlayerDialogProps) => {
 
     const [playerName, setPlayerName] = useState('');
-    const [win, setWin] = useState('')
     const wins: number = 0;
 
     return (
-        <Dialog isVisible={showPlayerDialog}>
+        <Dialog isVisible={props.showPlayerDialog}>
             <Dialog.Title title="Lisää pelaajat" />
             <TextInput
                 style={styles.input}
@@ -28,10 +26,10 @@ const PlayerDialog = ({ showDialog, showPlayerDialog, addPlayer, id }: PlayerDia
             />
             <View style={styles.button_view}>
                 <View style={styles.button}>
-                    <Button title="Lisää" onPress={() => addPlayer({ id, playerName, wins })} />
+                    <Button title="Lisää" onPress={() => props.addPlayer(playerName, wins)} />
                 </View>
                 <View style={styles.button}>
-                    <Button title="Peruuta" onPress={() => showDialog(false)} />
+                    <Button title="Peruuta" onPress={() => props.showDialog(false)} />
                 </View>
             </View>
         </Dialog>
