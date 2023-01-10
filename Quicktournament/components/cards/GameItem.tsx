@@ -2,14 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { NewPlayer } from '../../App';
+import { CurrentGame } from '../../interfaces/interfaces';
 import { getCurrentGame } from '../../Realm/Realm';
-
-interface CurrentGame {
-    id: number;
-    player1: string;
-    player2: string;
-    finished: boolean;
-}
 
 type GameItemProps = {
     playerWaitingList: NewPlayer[]

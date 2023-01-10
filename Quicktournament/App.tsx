@@ -8,19 +8,10 @@ import SafeAreaView, { SafeAreaProvider } from 'react-native-safe-area-view';
 import PlayerDialog from './components/dialogs/PlayerDialog';
 import PlayerCard from './components/cards/PlayerCardItem';
 import { createPlayer, getPlayerWaitingList } from './Realm/Realm';
+import { NewPlayer } from './interfaces/interfaces';
+import { format } from 'date-fns';
 
-export interface Game {
-  id: string;
-  player1: string;
-  player2: string;
-  win: string
-}
-
-export interface NewPlayer {
-  id: number;
-  playerName: string;
-  wins: number;
-}
+export type GameType = 'billiard' | 'snooker' | undefined;
 
 const App: () => ReactNode = () => {
 
@@ -37,6 +28,8 @@ const App: () => ReactNode = () => {
         let p: NewPlayer = {
           id: player.id,
           playerName: player.playerName,
+          gameType: player.gameType,
+          regTime: player.regTime,
           wins: player.wins
         }
 
@@ -68,10 +61,12 @@ const App: () => ReactNode = () => {
 
   }
 
-  const addPlayer = (playerName: string, wins: number) => {
+  const addPlayer = (playerName: string, gametype: GameType, wins: number) => {
     let player: NewPlayer = {
       id: getOrCreatePlayerId(),
       playerName: playerName,
+      gameType: gametype,
+      regTime: format(new Date(), "dd.MM HH:mm"),
       wins: wins
     };
 
