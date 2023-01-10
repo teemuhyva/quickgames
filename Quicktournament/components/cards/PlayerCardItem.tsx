@@ -3,7 +3,7 @@ import React from 'react';
 import { StyleSheet, ListRenderItemInfo } from 'react-native';
 import { NewPlayer } from '../../App';
 import { RowMap, SwipeListView } from 'react-native-swipe-list-view';
-import { PlayerCardView, SwipeShowDialogAction } from '../swipeaction/SwipeCardView';
+import { PlayerCardView } from '../swipeaction/SwipeCardView';
 
 type PlayerCardProps = {
     playerWaitingList: NewPlayer[]
@@ -17,17 +17,10 @@ const PlayerCard = ({ playerWaitingList }: PlayerCardProps) => {
         );
     };
 
-    const renderHiddenItem = (data: ListRenderItemInfo<NewPlayer>, rowMap: RowMap<NewPlayer>) => {
-        return (
-            <SwipeShowDialogAction data={data} rowMap={rowMap} />
-        );
-    };
-
     return (
         <SwipeListView
             data={playerWaitingList}
             renderItem={renderItem}
-            renderHiddenItem={renderHiddenItem}
             leftOpenValue={50}
         />
     );

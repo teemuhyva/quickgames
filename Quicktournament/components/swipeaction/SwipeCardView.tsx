@@ -1,46 +1,55 @@
 /* eslint-disable prettier/prettier */
 
 import React from 'react';
-import { View, Text, TouchableWithoutFeedback, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
 
 export const PlayerCardView = (props: any) => {
     const { data } = props;
 
     return (
-        <View style={styles.row}>
-            <Text style={styles.text}>{data.item.playerName}</Text>
+        <View style={styles.initialRow}>
+            <View style={styles.row}>
+                <Text style={styles.text}>Nimi: {data.item.playerName}</Text>
+            </View>
+            <View style={styles.row}>
+                <Text style={styles.text}>Rekisteröity: {data.item.regTime}</Text>
+            </View>
+            <View style={styles.row}>
+                <Text style={styles.text}>Peli: {data.item.gameType}</Text>
+            </View>
         </View>
     );
-};
-
-export const SwipeShowDialogAction = (props: any) => {
-    const { rightActionActivated, swipeAnimatedValue, data } = props;
-
-    return (
-        <View>
-            <TouchableWithoutFeedback onPress={() => console.log("touched")}>
-                <View>
-                </View>
-            </TouchableWithoutFeedback>
-        </View>
-    );
-
-
 };
 
 const styles = StyleSheet.create({
     row: {
         flexDirection: 'row',
-        backgroundColor: 'grey',
+    },
+
+    initialRow: {
+        backgroundColor: 'lightgrey',
         marginBottom: 20,
-        height: 50,
-        width: '100%',
-        alignItems: 'center',
+        height: 120,
+        width: '80%',
         justifyContent: 'center',
+        alignItems: 'center',
+        marginLeft: 50,
+        marginRight: 50,
+        borderRadius: 50,
     },
+
     text: {
-        fontSize: 20,
+        fontSize: 15,
     },
+
+    nametext: {
+        alignItems: 'flex-start',
+        paddingRight: 10
+    },
+
+    timetext: {
+        alignItems: 'flex-end'
+    }
 });
 

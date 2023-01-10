@@ -1,5 +1,6 @@
 import Realm from 'realm';
-import { NewPlayer } from '../App';
+import { GameType } from '../App';
+import { NewPlayer } from '../interfaces/interfaces';
 
 class Player {
     public static schema = {
@@ -7,12 +8,16 @@ class Player {
         properties: {
             id: "int",
             playerName: "string",
+            gameType: "string",
+            regTime: "string",
             wins: "int"
         },
     };
 
     public id: number;
     public playerName: string;
+    public gameType: GameType;
+    public regTime: string;
     public wins: number;
 }
 
@@ -37,7 +42,7 @@ async function createPlayerRealm(player: Player) {
 
     const playerRealm = await Realm.open({
         path: "Player",
-        schemaVersion: 2,
+        schemaVersion: 4,
         schema: [Player],
         migration: (oldrealm, newrealm) => {
             if (oldrealm.schemaVersion < 2) {
@@ -52,7 +57,13 @@ async function createPlayerRealm(player: Player) {
         }
     });
 
-    let newPlayer: NewPlayer = { id: 0, playerName: '', wins: 0 };
+    let newPlayer: NewPlayer = {
+        id: 0,
+        playerName: '',
+        gameType: undefined,
+        regTime: '',
+        wins: 0
+    };
 
     playerRealm.write(() => {
         newPlayer = playerRealm.create<Player>(
@@ -60,22 +71,33 @@ async function createPlayerRealm(player: Player) {
             {
                 id: player.id,
                 playerName: player.playerName,
+                gameType: player.gameType,
+                regTime: player.regTime,
                 wins: player.wins
             }
         )
     });
 
-    console.log(`Player added with name ${newPlayer.playerName} and wins: ${newPlayer.wins}`);
+    console.log(`Player added with name 
+    ${newPlayer.playerName} 
+    and wins: ${newPlayer.wins}
+    with gametype ${newPlayer.gameType}`);
 }
 
 async function playerWaitingListRealm() {
     const playerRealm = await Realm.open({
         path: "Player",
         schema: [Player],
-        schemaVersion: 2
+        schemaVersion: 4
     });
 
     const players = playerRealm.objects<Player>("Player");
+    /* 
+    playerRealm.write(() => {
+        playerRealm.delete(players);
+    });
+    */
+
     console.log(`Pelaajia kannassa ${players.map((player) => player.playerName)}`);
     return players;
 }
@@ -84,7 +106,7 @@ async function currentGame() {
     const gameRealm = await Realm.open({
         path: "Game",
         schema: [Game],
-        schemaVersion: 2,
+        schemaVersion: 4,
         migration: (oldrealm, newrealm) => {
             if (oldrealm.schemaVersion < 2) {
                 const oldPlayerObject = oldrealm.objects("Game");
