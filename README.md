@@ -24,12 +24,12 @@ MongoDb
   - [ ] Retrieve players on top ten list ( should it be shown based on total of wins or only those who will win 3 in row)
 
 View and react native logic
-  - [ ] Add player to list and show in listview ( each player shown in Card component)
+  - [x] Add player to list and show in listview ( each player shown in Card component)
   - [ ] Add daytime to filter is it billiard or snooker
   - [ ] Add game that contains 2 players ( Game shown in Card component)
   - [ ] Queue for ongoing game
-  - [ ] Queue for players waiting
-  - [ ] Horizontal line to separate above 
+  - [x] Queue for players waiting
+  - [ ] Horizontal line to separate above ( when configured for tablet )
   - [ ] New window with navigation for history. (Hamburger model)
 
 
