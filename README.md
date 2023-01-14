@@ -17,7 +17,7 @@ Project
 - [x] Create code base for react native app and add typescript support
 
 MongoDb
-  - [ ] Store new player
+  - [x] Store new player
   - [ ] Store game where is 2 players
   - [ ] Update player name
   - [ ] Remove player from queue. Add confirmation ( will be swiped on screen )
@@ -30,6 +30,6 @@ View and react native logic
   - [ ] Queue for ongoing game
   - [x] Queue for players waiting
   - [ ] Horizontal line to separate above ( when configured for tablet )
-  - [ ] New window with navigation for history. (Hamburger model)
+  - [x] Navigation. (Hamburger model)
 
 
