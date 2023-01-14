@@ -1,5 +1,3 @@
-import { GameType } from "../App";
-
 export interface CurrentGame {
     id: number;
     player1: string;
@@ -17,7 +15,9 @@ export interface Game {
 export interface NewPlayer {
     id: number;
     playerName: string;
-    gameType: GameType;
+    gameType: string;
     regTime: string
     wins: number;
 }
+
+export type GameType = 'billiard' | 'snooker' | undefined;
