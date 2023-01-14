@@ -1,8 +1,9 @@
 /* eslint-disable prettier/prettier */
 import React from 'react';
-import { StyleSheet, ListRenderItemInfo } from 'react-native';
-import { NewPlayer } from '../../App';
+import { ListRenderItemInfo, StyleSheet, Text } from 'react-native';
 import { RowMap, SwipeListView } from 'react-native-swipe-list-view';
+import { NewPlayer } from '../../interfaces/interfaces';
+
 import { PlayerCardView } from '../swipeaction/SwipeCardView';
 
 type PlayerCardProps = {
@@ -18,11 +19,15 @@ const PlayerCard = ({ playerWaitingList }: PlayerCardProps) => {
     };
 
     return (
-        <SwipeListView
-            data={playerWaitingList}
-            renderItem={renderItem}
-            leftOpenValue={50}
-        />
+        <>
+            {playerWaitingList.length < 1 ?
+                <Text style={styles.text}>Pelaajia ei löytynyt</Text> :
+                <SwipeListView
+                    data={playerWaitingList}
+                    renderItem={renderItem}
+                    leftOpenValue={50}
+                />}
+        </>
     );
 };
 
@@ -38,6 +43,8 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 20,
+        textAlign: 'center',
+        marginTop: '50%',
     }
 });
 

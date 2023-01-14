@@ -1,5 +1,4 @@
 import Realm from 'realm';
-import { GameType } from '../App';
 import { NewPlayer } from '../interfaces/interfaces';
 
 class Player {
@@ -16,7 +15,7 @@ class Player {
 
     public id: number;
     public playerName: string;
-    public gameType: GameType;
+    public gameType: string;
     public regTime: string;
     public wins: number;
 }
@@ -60,7 +59,7 @@ async function createPlayerRealm(player: Player) {
     let newPlayer: NewPlayer = {
         id: 0,
         playerName: '',
-        gameType: undefined,
+        gameType: '',
         regTime: '',
         wins: 0
     };
@@ -84,22 +83,27 @@ async function createPlayerRealm(player: Player) {
     with gametype ${newPlayer.gameType}`);
 }
 
-async function playerWaitingListRealm() {
+async function playerWaitingListRealm(gameType?: string) {
     const playerRealm = await Realm.open({
         path: "Player",
         schema: [Player],
         schemaVersion: 4
     });
 
-    const players = playerRealm.objects<Player>("Player");
+    if (gameType) {
+        const players = playerRealm.objects<Player>("Player").filtered("gameType == $0", gameType);
+        console.log(players);
+        return players;
+    }
+
+
     /* 
     playerRealm.write(() => {
         playerRealm.delete(players);
     });
     */
 
-    console.log(`Pelaajia kannassa ${players.map((player) => player.playerName)}`);
-    return players;
+    return playerRealm.objects<Player>("Player");
 }
 
 async function currentGame() {
@@ -120,13 +124,13 @@ async function currentGame() {
         }
     });
 
-    let runningGame = gameRealm.objects<Game>("Game").filtered("finished = false");
+    let runningGame = gameRealm.objects<Game>("Game").filtered("finished == $0,", false);
     console.log(`Peli käynnissä:  ${runningGame.map((player) => `${player.player1}`)}`);
     return runningGame;
 }
 
-export const getPlayerWaitingList = async () => {
-    return await playerWaitingListRealm();
+export const getPlayerWaitingList = async (gameType?: string) => {
+    return await playerWaitingListRealm(gameType);
 }
 
 export const createPlayer = (player: Player) => {
