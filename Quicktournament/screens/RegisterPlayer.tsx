@@ -1,18 +1,14 @@
+import { ButtonGroup, Button, Input  } from '@rneui/themed';
 import { format } from "date-fns";
 import React, { useState } from "react";
-import { SafeAreaView, TextInput, Button, StyleSheet } from "react-native";
-import DropDownPicker from "react-native-dropdown-picker";
+import { StyleSheet, TextInput, View } from "react-native";
 import { GameType, NewPlayer } from "../interfaces/interfaces";
-import { getPlayerWaitingList, createPlayer } from "../Realm/Realm";
+import { createPlayer, getPlayerWaitingList } from "../Realm/Realm";
 
 const RegisterNewPlayer = ({ navigation }) => {
     const [playerName, setPlayerName] = useState('');
-    const [open, setOpen] = useState(false);
     const [game, setGame] = useState('');
-    const [items, setItems] = useState([
-        { label: 'Biljardi', value: 'billiard' },
-        { label: 'Snooker', value: 'snooker' }
-    ]);
+    const [selectedIndex, setSelectedIndex] = useState(0);
 
     const getOrCreatePlayerId = async () => {
         const data = await getPlayerWaitingList();
@@ -44,46 +40,45 @@ const RegisterNewPlayer = ({ navigation }) => {
     };
 
     return (
-        <SafeAreaView>
-            <TextInput
-                placeholder="Pelaajan nimi"
-                onChangeText={setPlayerName}
-            />
-            <DropDownPicker
-                open={open}
-                value={game}
-                items={items}
-                setOpen={setOpen}
-                setValue={setGame}
-                setItems={setItems}
-            />
-            <Button title='Submit' onPress={() => addPlayer(playerName, game)} />
-        </SafeAreaView>
+        <View style={styles.registerView}>
+            <View style={styles.playerInput}>
+                <Input
+                    placeholder="Pelaajan nimi"
+                    onChangeText={setPlayerName}
+                />
+            </View>
+            <View style={styles.gameType}>
+                <ButtonGroup 
+                    buttons={['BILJARDI', 'SNOOKER']}
+                    selectedIndex={selectedIndex}
+                    onPress={(value) => {
+                        setSelectedIndex(value);
+                    }}/>
+            </View>
+            <View style={styles.register}>
+                <Button title='Rekisteröi' onPress={() => addPlayer(playerName, game)} />
+            </View>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#ecf0f1',
-        marginTop: 30,
-        padding: 2,
-    },
-    item: {
-        backgroundColor: '#f9c2ff',
+    registerView: {
+        flex: 0.5,
+        top: '20%',
+        justifyContent: 'space-between',
+        backgroundColor: '#fff',
         padding: 20,
-        marginVertical: 8,
-        marginHorizontal: 16,
+        margin: 10,
     },
-    title: {
-        fontSize: 32,
+    playerInput: {
+        flex: 0.3,
     },
-    waitingText: {
-        fontSize: 20,
-        textAlign: 'center',
-        marginBottom: 50
+    gameType: {
+        flex: 0.3,
+    },
+    register: {
+        flex: 0.3,
     }
 });
 
