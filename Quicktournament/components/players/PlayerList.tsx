@@ -1,9 +1,8 @@
+import { Avatar, ListItem } from "@rneui/themed";
 import React, { useEffect, useState } from "react";
-import { SafeAreaView, Text, View } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import { Text, View, StyleSheet } from "react-native";
 import { NewPlayer } from "../../interfaces/interfaces";
 import { getPlayerWaitingList } from "../../Realm/Realm";
-import PlayerCard from "../cards/PlayerCardItem";
 
 const PlayerList = ({ route }) => {
 
@@ -42,14 +41,40 @@ const PlayerList = ({ route }) => {
     };
 
     return (
-        <SafeAreaProvider>
-            <SafeAreaView>
+        <>
+            {!playerWaitingList.length ?
                 <View>
-                    <PlayerCard playerWaitingList={playerWaitingList} />
+                    <Text>Pelaajia ei löytynyt</Text>
+                </View> :
+                <View>
+                    {playerWaitingList.map((player, i) => {
+                        return (
+                            <ListItem key={i} bottomDivider style={styles.listview}>
+                                <Avatar 
+                                    rounded 
+                                    icon={{
+                                        name: 'person-outline', 
+                                        type: 'material', 
+                                        size: 26}}
+                                    containerStyle={{ backgroundColor: '#c2c2c2'}}/>
+                                <ListItem.Content>
+                                    <ListItem.Title>{player.playerName}</ListItem.Title>
+                                    <ListItem.Subtitle>{player.regTime}</ListItem.Subtitle>
+                                </ListItem.Content>
+                            </ListItem>
+                        )})
+                    }
                 </View>
-            </SafeAreaView>
-        </SafeAreaProvider>
+           
+            }
+        </>
     );
 }
+
+const styles = StyleSheet.create({
+    listview: {
+        flexDirection: 'column'
+    },
+});
 
 export default PlayerList;

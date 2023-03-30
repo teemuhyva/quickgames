@@ -6,6 +6,7 @@ import { GameType, NewPlayer } from "../interfaces/interfaces";
 import { createPlayer, getPlayerWaitingList } from "../Realm/Realm";
 
 const RegisterNewPlayer = ({ navigation }) => {
+
     const [playerName, setPlayerName] = useState('');
     const [game, setGame] = useState('');
     const [selectedIndex, setSelectedIndex] = useState(0);
@@ -52,7 +53,8 @@ const RegisterNewPlayer = ({ navigation }) => {
                     buttons={['BILJARDI', 'SNOOKER']}
                     selectedIndex={selectedIndex}
                     onPress={(value) => {
-                        setSelectedIndex(value);
+                        setSelectedIndex(value)
+                        value === 0 ? setGame('billiard') : setGame('snooker');
                     }}/>
             </View>
             <View style={styles.register}>
