@@ -1,5 +1,5 @@
 import Realm from 'realm';
-import { NewPlayer } from '../interfaces/interfaces';
+import { NewPlayer, Status } from '../interfaces/interfaces';
 
 class Player {
     public static schema = {
@@ -9,6 +9,7 @@ class Player {
             playerName: "string",
             gameType: "string",
             regTime: "string",
+            gameStatus: "string",
             wins: "int"
         },
     };
@@ -17,6 +18,7 @@ class Player {
     public playerName: string;
     public gameType: string;
     public regTime: string;
+    public gameStatus: Status;
     public wins: number;
 }
 
@@ -41,7 +43,7 @@ async function createPlayerRealm(player: Player) {
 
     const playerRealm = await Realm.open({
         path: "Player",
-        schemaVersion: 4,
+        schemaVersion: 5,
         schema: [Player],
         migration: (oldrealm, newrealm) => {
             if (oldrealm.schemaVersion < 2) {
@@ -61,6 +63,7 @@ async function createPlayerRealm(player: Player) {
         playerName: '',
         gameType: '',
         regTime: '',
+        gameStatus: 'waiting',
         wins: 0
     };
 
@@ -72,6 +75,7 @@ async function createPlayerRealm(player: Player) {
                 playerName: player.playerName,
                 gameType: player.gameType,
                 regTime: player.regTime,
+                gameStatus: player.gameStatus,
                 wins: player.wins
             }
         )
@@ -87,21 +91,21 @@ async function playerWaitingListRealm(gameType?: string) {
     const playerRealm = await Realm.open({
         path: "Player",
         schema: [Player],
-        schemaVersion: 4
+        schemaVersion: 5
     });
+
+    /*
+    playerRealm.write(() => {
+        const players = playerRealm.objects<Player>(Player.schema.name);
+        playerRealm.delete(players);
+    });
+    */
 
     if (gameType) {
         const players = playerRealm.objects<Player>("Player").filtered("gameType == $0", gameType);
         console.log(players);
         return players;
     }
-
-
-    /* 
-    playerRealm.write(() => {
-        playerRealm.delete(players);
-    });
-    */
 
     return playerRealm.objects<Player>("Player");
 }
@@ -129,6 +133,31 @@ async function currentGame() {
     return runningGame;
 }
 
+async function playerUpdate(player: Player) {
+    const playerRealm = await Realm.open({
+        path: "Player",
+        schema: [Player],
+        schemaVersion: 5
+    });
+
+    let searchPlayer = playerRealm.objects<Player>("Player").filtered("id == $0", player.id);
+    searchPlayer.map((p) => {
+        playerRealm.write(() => {
+            p = playerRealm.create<Player>(
+                "Player",
+                {
+                    id: player.id,
+                    playerName: player.playerName,
+                    gameType: player.gameType,
+                    regTime: player.regTime,
+                    gameStatus: "ongoing",
+                    wins: player.wins
+                }
+            )
+        });
+    })
+}
+
 export const getPlayerWaitingList = async (gameType?: string) => {
     return await playerWaitingListRealm(gameType);
 }
@@ -139,4 +168,8 @@ export const createPlayer = (player: Player) => {
 
 export const getCurrentGame = async () => {
     return await currentGame();
+}
+
+export const updatePlayerStatus = async (player: Player) => {
+    playerUpdate(player);
 }

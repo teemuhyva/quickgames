@@ -27,17 +27,12 @@ const RegisterNewPlayer = ({ navigation }) => {
             playerName: playerName,
             gameType: type,
             regTime: format(new Date(), "dd.MM HH:mm"),
+            gameStatus: 'waiting',
             wins: 0
         };
 
         createPlayer(player);
-
-        if (gametype === 'billiard') {
-            navigation.navigate('Biljardi', { gametype: game });
-        } else {
-            navigation.navigate('Snooker', { gametype: game });
-        }
-
+        navigation.navigate('Pelit', { gametype: game });
     };
 
     return (

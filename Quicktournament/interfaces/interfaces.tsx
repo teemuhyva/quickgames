@@ -1,3 +1,5 @@
+export type Status ='waiting' | 'ongoing' | 'finished';
+
 export interface CurrentGame {
     id: number;
     player1: string;
@@ -16,7 +18,8 @@ export interface NewPlayer {
     id: number;
     playerName: string;
     gameType: string;
-    regTime: string
+    regTime: string;
+    gameStatus: Status;
     wins: number;
 }
 

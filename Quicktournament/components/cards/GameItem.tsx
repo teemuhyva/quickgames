@@ -1,70 +1,96 @@
 /* eslint-disable prettier/prettier */
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { Avatar } from '@rneui/themed';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import { Card, Divider, ListItem } from 'react-native-elements';
 import { NewPlayer } from '../../App';
 import { CurrentGame } from '../../interfaces/interfaces';
-import { getCurrentGame } from '../../Realm/Realm';
 
-type GameItemProps = {
-    playerWaitingList: NewPlayer[]
+type CurrentGameProps = {
+    inGamePlayers: NewPlayer[]
 }
 
-const GameItem = (players: GameItemProps) => {
+const OnGoingGame = (players: CurrentGameProps) => {
 
-    const [game, setGame] = useState<CurrentGame>();
-    const playerList = players.playerWaitingList;
-
-    useEffect(() => {
-        const fetchCurrentGame = async () => {
-            const data = await getCurrentGame();
-            if (data.length < 1) {
-                createGame();
-            } else {
-                data.map((g) => {
-                    if (g === undefined) {
-                        createGame();
-                    } else {
-                        setGame(g);
-                    }
-                });
-            }
-        };
-
-        fetchCurrentGame();
-    }, []);
-
-    const createGame = () => {
-        let newGame: CurrentGame = { id: 0, player1: '', player2: '', finished: false };
-        if (playerList.length >= 2) {
-            newGame = {
-                id: playerList[0].id,
-                player1: playerList[0].playerName,
-                player2: playerList[1].playerName,
-                finished: false,
-            };
-
-            setGame(newGame);
-        }
-    };
+    const PlayerCard = (player1: any, player2: any) => {
+        return (
+            <>
+            <View style={styles.containerView}>
+                <View style={styles.cardContainer}>
+                    <Card>
+                        <Card.Title>Pelaaja 1</Card.Title>
+                        <Card.Divider />
+                        <View>
+                            <ListItem>
+                                <Avatar 
+                                    rounded 
+                                    icon={{
+                                        name: 'person-outline', 
+                                        type: 'material', 
+                                        size: 26}}
+                                    containerStyle={{ backgroundColor: '#c2c2c2'}}/>
+                                <ListItem.Content>
+                                    <ListItem.Title>{player1.playerName || "TBD"}</ListItem.Title>
+                                </ListItem.Content>
+                            </ListItem>
+                        </View>
+                    </Card>
+                </View>
+                <View style={styles.cardContainer}>
+                    <Card>
+                        <Card.Title>Pelaaja 2</Card.Title>
+                        <Card.Divider />
+                        <View>
+                            <ListItem>
+                                <Avatar 
+                                    rounded 
+                                    icon={{
+                                        name: 'person-outline', 
+                                        type: 'material', 
+                                        size: 26}}
+                                    containerStyle={{ backgroundColor: '#c2c2c2'}}/>
+                                <ListItem.Content>
+                                    <ListItem.Title>{player2.playerName || "TBD"}</ListItem.Title>
+                                </ListItem.Content>
+                            </ListItem>
+                        </View>
+                    </Card>
+                </View>
+            </View>
+            <Divider style={styles.divider}/>
+            </>
+        )
+    }
 
     return (
-        <View style={styles.gameview}>
-            <Text>{game?.player1}</Text>
-            <Text>{game?.player2}</Text>
-        </View>
-    );
+        <>
+            {!players.inGamePlayers.length ?
+                <PlayerCard /> :
+                players.inGamePlayers.length === 1 ?
+                <PlayerCard player1={players.inGamePlayers[0]} player2="TBD"/> :
+                <PlayerCard player1={players.inGamePlayers[0]} layer1={players.inGamePlayers[2]}/>
+            
+            }
+        </>
+    )
 };
 
 const styles = StyleSheet.create({
-    gameview: {
+    containerView: {
         flexDirection: 'row',
-        backgroundColor: 'grey',
-        marginBottom: 20,
-        height: 50,
-        width: '100%',
+        height: 200,
+        marginTop: 10,
+        marginBottom: 10,
         alignItems: 'center',
-        justifyContent: 'center',
     },
+    cardContainer: {
+        flex: 1
+    },
+    divider: {
+        width: 20,
+        color: 'red',
+        padding: 10
+    }
 });
 
-export default GameItem;
+export default OnGoingGame;
