@@ -1,47 +1,34 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { Card, ListItem } from "react-native-elements";
-import { NewPlayer } from '../interfaces/interfaces';
-import { getPlayerWaitingList } from "../Realm/Realm";
-import PlayerList from "../components/players/PlayerList";
-import { Avatar, Divider } from "@rneui/themed";
+import { StyleSheet } from "react-native";
+import { getPlayerWaitingList, updatePlayerStatus } from "../Realm/Realm";
 import OnGoingGame from "../components/cards/GameItem";
+import PlayerList from "../components/players/PlayerList";
+import { NewPlayer } from '../interfaces/interfaces';
 
 const Games = ({ route }) => {
 
     const { gametype } = route.params;
     const [playerWaitingList, setPlayerWaitingList] = useState<NewPlayer[]>([]);
     const [inGamePlayers, setIngamePlayers] = useState<NewPlayer[]>([]);
+    const [playerOngoing, setPlayerOngoing] = useState<NewPlayer>();
 
     useEffect(() => {
         fetchPlayerWaitingList();
         if(playerWaitingList.length) {
             getNextGamePlayers();
         } 
-    }, []);
+    }, [JSON.stringify(playerWaitingList), playerOngoing]);
 
     /* TODO: move this method to another location where all logic can be */
     const fetchPlayerWaitingList = async () => {
         const data = await getPlayerWaitingList(gametype);
 
-        const players = [...playerWaitingList];
+        const players: NewPlayer[] = [];
         data.map((player: NewPlayer) => {
-            const exists = players.find(p => p.id === player.id);
-            if(!exists) {
-                let p: NewPlayer = {
-                    id: player.id,
-                    playerName: player.playerName,
-                    gameType: player.gameType,
-                    regTime: player.regTime,
-                    gameStatus: player.gameStatus,
-                    wins: player.wins
-                }
-    
-                players.push(p);
-
-                setPlayerWaitingList(players);
-            }
+            players.push(player);
         });
+
+        setPlayerWaitingList(players);
     };
 
     const getNextGamePlayers = () => {
@@ -54,21 +41,21 @@ const Games = ({ route }) => {
         setIngamePlayers(currentGame);
     }
 
+    const handleGameStatus = async(player: NewPlayer) => {
+        await updatePlayerStatus(player);
+        setPlayerOngoing(player);
+    }
+
     return (
         <>
-            <OnGoingGame inGamePlayers={inGamePlayers} />
-            <Divider style={styles.divider}/>
-            <PlayerList waitingList={playerWaitingList}/>
+            <OnGoingGame players={inGamePlayers} />
+            <PlayerList waitingList={playerWaitingList} handleGameStatus={handleGameStatus}/>
         </>
     )
 }
 
 const styles = StyleSheet.create({
-    divider: {
-        width: 20,
-        color: 'red',
-        padding: 10
-    }
+    
 });
 
 export default Games;

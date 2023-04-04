@@ -1,18 +1,14 @@
 import { Avatar, ListItem } from "@rneui/themed";
 import React from "react";
-import { Text, View, StyleSheet } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { NewPlayer } from "../../interfaces/interfaces";
-import { updatePlayerStatus } from "../../Realm/Realm";
 
 type PlayerListProps = {
-    waitingList: NewPlayer[]
+    waitingList: NewPlayer[];
+    handleGameStatus: (player: NewPlayer) => void;
 }
 
 const PlayerList = (players: PlayerListProps) => {
-
-    const handleGameStatus = async(player: NewPlayer) => {
-        await updatePlayerStatus(player);
-    }
 
     return (
         <>
@@ -21,10 +17,9 @@ const PlayerList = (players: PlayerListProps) => {
                     <Text>Pelaajia ei löytynyt</Text>
                 </View> :
                 <View>
-                    {players.waitingList.map((player, i) => {
-                        player.gameStatus === 'waiting'
-                            return (
-                                    <ListItem key={i} bottomDivider style={styles.listview} onPress={() => handleGameStatus(player)}>
+                    { players.waitingList.map((player, i) => {
+                            return player.gameStatus === 'waiting' && (
+                                    <ListItem key={i} bottomDivider style={styles.listview} onPress={() => players.handleGameStatus(player)}>
                                     <Avatar 
                                         rounded 
                                         icon={{
@@ -36,7 +31,7 @@ const PlayerList = (players: PlayerListProps) => {
                                         <ListItem.Title>{player.playerName}</ListItem.Title>
                                         <ListItem.Subtitle>{player.regTime}</ListItem.Subtitle>
                                     </ListItem.Content>
-                                </ListItem>                                
+                                </ListItem>       
                             )})
                     }
                 </View>

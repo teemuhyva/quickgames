@@ -83,6 +83,7 @@ async function createPlayerRealm(player: Player) {
 
     console.log(`Player added with name 
     ${newPlayer.playerName} 
+    ${newPlayer.id} 
     and wins: ${newPlayer.wins}
     with gametype ${newPlayer.gameType}`);
 }
@@ -93,20 +94,12 @@ async function playerWaitingListRealm(gameType?: string) {
         schema: [Player],
         schemaVersion: 5
     });
-
-    /*
+/*
     playerRealm.write(() => {
         const players = playerRealm.objects<Player>(Player.schema.name);
         playerRealm.delete(players);
     });
-    */
-
-    if (gameType) {
-        const players = playerRealm.objects<Player>("Player").filtered("gameType == $0", gameType);
-        console.log(players);
-        return players;
-    }
-
+*/
     return playerRealm.objects<Player>("Player");
 }
 
@@ -140,22 +133,15 @@ async function playerUpdate(player: Player) {
         schemaVersion: 5
     });
 
-    let searchPlayer = playerRealm.objects<Player>("Player").filtered("id == $0", player.id);
-    searchPlayer.map((p) => {
-        playerRealm.write(() => {
-            p = playerRealm.create<Player>(
-                "Player",
-                {
-                    id: player.id,
-                    playerName: player.playerName,
-                    gameType: player.gameType,
-                    regTime: player.regTime,
-                    gameStatus: "ongoing",
-                    wins: player.wins
-                }
-            )
-        });
+    playerRealm.write(() => {
+        console.log(player.id);
+        let searchPlayer = playerRealm.objects<Player>("Player").filtered("id == $0", player.id)[0];
+        console.log(`Pelaaja ${player.id} löytyi: ${searchPlayer.playerName}`);
+        searchPlayer.gameStatus = "ongoing"
     })
+
+    let allPlayers = playerRealm.objects<Player>("Player")
+    allPlayers.map((player) =>  console.log(`${player.playerName} ${player.id} ${player.gameStatus}`))
 }
 
 export const getPlayerWaitingList = async (gameType?: string) => {

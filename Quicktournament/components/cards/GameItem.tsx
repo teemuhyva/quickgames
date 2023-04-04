@@ -3,16 +3,16 @@ import { Avatar } from '@rneui/themed';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Card, Divider, ListItem } from 'react-native-elements';
-import { NewPlayer } from '../../App';
-import { CurrentGame } from '../../interfaces/interfaces';
+import { CurrentGame, NewPlayer } from '../../interfaces/interfaces';
 
 type CurrentGameProps = {
-    inGamePlayers: NewPlayer[]
+    players: NewPlayer[]
 }
 
-const OnGoingGame = (players: CurrentGameProps) => {
+const OnGoingGame = (props: CurrentGameProps) => {
 
-    const PlayerCard = (player1: any, player2: any) => {
+    const PlayerCard = (players: any) => {
+
         return (
             <>
             <View style={styles.containerView}>
@@ -30,7 +30,7 @@ const OnGoingGame = (players: CurrentGameProps) => {
                                         size: 26}}
                                     containerStyle={{ backgroundColor: '#c2c2c2'}}/>
                                 <ListItem.Content>
-                                    <ListItem.Title>{player1.playerName || "TBD"}</ListItem.Title>
+                                    <ListItem.Title>{players.players && players.players.length > 0 && players.players[0].playerName ||"TBD"}</ListItem.Title>
                                 </ListItem.Content>
                             </ListItem>
                         </View>
@@ -50,7 +50,7 @@ const OnGoingGame = (players: CurrentGameProps) => {
                                         size: 26}}
                                     containerStyle={{ backgroundColor: '#c2c2c2'}}/>
                                 <ListItem.Content>
-                                    <ListItem.Title>{player2.playerName || "TBD"}</ListItem.Title>
+                                    <ListItem.Title>{players.players && players.players.length > 1 && players.players[1].playerName || "TBD"}</ListItem.Title>
                                 </ListItem.Content>
                             </ListItem>
                         </View>
@@ -64,12 +64,9 @@ const OnGoingGame = (players: CurrentGameProps) => {
 
     return (
         <>
-            {!players.inGamePlayers.length ?
+            {!props.players.length ?
                 <PlayerCard /> :
-                players.inGamePlayers.length === 1 ?
-                <PlayerCard player1={players.inGamePlayers[0]} player2="TBD"/> :
-                <PlayerCard player1={players.inGamePlayers[0]} layer1={players.inGamePlayers[2]}/>
-            
+                <PlayerCard players={props.players}/>
             }
         </>
     )
