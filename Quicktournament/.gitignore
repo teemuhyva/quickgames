@@ -62,6 +62,8 @@ buck-out
 .gradle
 local.properties
 *.iml
+/packages/react-native/android/*
+!/packages/react-native/android/README.md
 
 # Node
 node_modules
