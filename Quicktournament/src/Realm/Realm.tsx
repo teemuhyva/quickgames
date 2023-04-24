@@ -1,5 +1,5 @@
 import Realm from 'realm';
-import { NewPlayer } from '../src/interfaces/interfaces';
+import { NewPlayer } from '../interfaces/interfaces';
 
 class Player {
     public static schema = {
@@ -41,7 +41,7 @@ async function createPlayerRealm(player: Player) {
 
     const playerRealm = await Realm.open({
         path: "Player",
-        schemaVersion: 4,
+        schemaVersion: 5,
         schema: [Player],
         migration: (oldrealm, newrealm) => {
             if (oldrealm.schemaVersion < 2) {
@@ -87,7 +87,7 @@ async function playerWaitingListRealm(gameType?: string) {
     const playerRealm = await Realm.open({
         path: "Player",
         schema: [Player],
-        schemaVersion: 4
+        schemaVersion: 5
     });
 
     if (gameType) {
@@ -110,7 +110,7 @@ async function currentGame() {
     const gameRealm = await Realm.open({
         path: "Game",
         schema: [Game],
-        schemaVersion: 4,
+        schemaVersion: 5,
         migration: (oldrealm, newrealm) => {
             if (oldrealm.schemaVersion < 2) {
                 const oldPlayerObject = oldrealm.objects("Game");

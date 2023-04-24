@@ -1,7 +1,6 @@
-import React from 'react';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import Games from '../screens/Games';
 import { Icon } from '@rneui/themed';
+import React from 'react';
 import Scores from '../screens/Scores';
 import { GameScreenNavigation } from './CustomNavigation';
 

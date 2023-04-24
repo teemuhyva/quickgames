@@ -1,8 +1,8 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import Games from "../screens/Games";
-import PlayerList from "../components/players/PlayerList";
 import Scores from "../screens/Scores";
+import PlayerList from "../components/PlayerList";
 
 const Stack = createStackNavigator();
 
