@@ -2,38 +2,47 @@
 import { format } from "date-fns";
 import React, { useState } from "react";
 import { Modal, StyleSheet, View } from "react-native";
-import { createPlayer, getPlayerWaitingList } from "../Realm/Realm";
-import { GameType, NewPlayer } from "../interfaces/interfaces";
 import { Button, ButtonGroup, Input } from "@rneui/base";
+import { GameType, NewPlayer } from "../interfaces/interfaces";
+import { createPlayer, getPlayers } from "../realm/Realm";
+import { useNavigation } from "@react-navigation/native";
+import RealmContext from '../models/RealmConfig';
+import { Player } from "../models/Player";
+
+const { useRealm } = RealmContext;
 
 const RegisterNewPlayer = ({ visible, registeration }) => {
 
     const [playerName, setPlayerName] = useState('');
-    const [game, setGame] = useState('');
+    const [game, setGame] = useState<GameType>('billiard');
     const [selectedIndex, setSelectedIndex] = useState(0);
 
-    const getOrCreatePlayerId = async () => {
-        const data = await getPlayerWaitingList();
-        if (data.length < 1) {
+    const realm = useRealm();
+
+    const getOrCreatePlayerId = () => {
+        let playerList: any;
+        playerList = realm.objects<Player>("Player");
+        if (playerList.length < 1) {
             return 1; //if playerlist is empty create id of 1
         } else {
-            return data[data.length - 1].id + 1;
+            return playerList.length + 1;
         }
     }
 
-    const addPlayer = async (playerName: string, gametype: string) => {
-        /*
-        const type: GameType = gametype === 'snooker' ? 'snooker' : 'billiard';
-        let player: NewPlayer = {
-            id: await getOrCreatePlayerId(),
+    const createPlayer = () => {
+        const type: GameType = game;
+        const player: NewPlayer = {
+            id: getOrCreatePlayerId(),
             playerName: playerName,
             gameType: type,
             regTime: format(new Date(), "dd.MM HH:mm"),
             wins: 0
         };
-*/
-       // createPlayer(player);
-        registeration(false);
+
+        realm.write(() => {
+            realm.create('Player', player);
+        })
+        registeration(false, player);
     };
 
 
@@ -45,9 +54,7 @@ const RegisterNewPlayer = ({ visible, registeration }) => {
                 animationType="slide"
                 transparent={true}
                 visible={visible}
-                onRequestClose={() => {
-                    addPlayer(playerName, game);
-            }}>
+                >
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
                         <View>
@@ -62,9 +69,9 @@ const RegisterNewPlayer = ({ visible, registeration }) => {
                             selectedIndex={selectedIndex}
                             onPress={(value) => {
                                 setSelectedIndex(value)
-                                value === 0 ? setGame('billiard') : setGame('snooker');
+                                value === 0 || value === undefined ? setGame('billiard') : setGame('snooker');
                             }}/>
-                        <Button title='Rekisteröi' onPress={() =>  addPlayer(playerName, game)} />
+                        <Button title='Rekisteröi' onPress={() => createPlayer()} />
                     </View>
                 </View>
             </Modal>

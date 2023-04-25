@@ -15,7 +15,7 @@ export interface Game {
 export interface NewPlayer {
     id: number;
     playerName: string;
-    gameType: string;
+    gameType: GameType;
     regTime: string
     wins: number;
 }

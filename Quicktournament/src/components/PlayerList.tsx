@@ -2,17 +2,22 @@
 import React, { useEffect, useState } from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { NewPlayer } from "../interfaces/interfaces";
-import { getPlayerWaitingList } from "../Realm/Realm";
 import OnGoingGame from "./OnGoingGame";
 import WaitingList from "./WaitinList";
 import { Button } from "react-native-elements";
 import RegisterNewPlayer from "./RegisterPlayer";
+import RealmContext from '../models/RealmConfig';
+import { Player } from "../models/Player";
+
+const { useRealm } = RealmContext;
 
 const PlayerList = ({ route }) => {
 
-    const { gametype } = route;
+    const { gameType } = route.params;
     const [playerWaitingList, setPlayerWaitingList] = useState<NewPlayer[]>([]);
     const [isVisible, setIsVisible] = useState(false);
+
+    const realm = useRealm();
 
     useEffect(() => {
         fetchPlayerWaitingList();
@@ -26,26 +31,20 @@ const PlayerList = ({ route }) => {
         );
     }
 
-    const fetchPlayerWaitingList = async () => {
-        const data = await getPlayerWaitingList(gametype);
+    const fetchPlayerWaitingList =() => {
+        let playerList: any;
+        playerList = realm.objects<Player>("Player").filtered("gameType == $0", gameType);
 
-        const players = [...playerWaitingList];
-        data.map((player: NewPlayer) => {
-            let p: NewPlayer = {
-                id: player.id,
-                playerName: player.playerName,
-                gameType: player.gameType,
-                regTime: player.regTime,
-                wins: player.wins
-            }
-
-            players.push(p);
+        const players: NewPlayer[] = [];
+        playerList.map((player: NewPlayer) => {
+            players.push(player);
         });
 
         setPlayerWaitingList(players);
     };
 
-    const registeration = (value: boolean) => {
+    const registeration = (value: boolean, player: NewPlayer) => {        
+        setPlayerWaitingList([...playerWaitingList, player]);
         setIsVisible(value);
     }
 
@@ -55,6 +54,7 @@ const PlayerList = ({ route }) => {
                 <View>
                     <OnGoingGame />
                     <WaitingList waitingList={playerWaitingList}/>
+                    
                 </View>
                 <View style={styles.buttonsContainer}>
                     <Button
@@ -68,10 +68,10 @@ const PlayerList = ({ route }) => {
                         containerStyle={{
                             width: 200,
                             marginHorizontal: 10,
-                            marginVertical: 300,
+                            marginVertical: 10,
                         }}
                         titleStyle={{ fontWeight: 'bold' }}
-                        onPress={() => registeration(true)}
+                        onPress={() => setIsVisible(true)}
                     />
                 </View>
             </View>
@@ -83,7 +83,8 @@ const PlayerList = ({ route }) => {
 const styles = StyleSheet.create({
     container: {
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        position: 'relative'
     },
     buttonsContainer: {
         flexDirection: 'row',
@@ -91,7 +92,8 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         alignItems: 'center',
         width: '100%',
-        marginVertical: 20,
+        marginVertical: 580,
+        position: 'absolute'
     },
 });
 
