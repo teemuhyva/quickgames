@@ -1,11 +1,10 @@
-import {Realm} from '@realm/react'
-
 export class Player {
     id!: number;
     playerName!: string;
     gameType!: string;
     regTime: string;
     wins: number;
+    onGoingGame: number;
 
     static schema = {
         name: "Player",
@@ -14,7 +13,8 @@ export class Player {
             playerName: "string",
             gameType: "string",
             regTime: "string",
-            wins: "int"
+            wins: "int",
+            onGoingGame: "int"
         },
         primaryKey: 'id',
     };

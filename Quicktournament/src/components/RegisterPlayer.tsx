@@ -1,13 +1,11 @@
 
+import { Button, ButtonGroup, Input } from "@rneui/base";
 import { format } from "date-fns";
 import React, { useState } from "react";
 import { Modal, StyleSheet, View } from "react-native";
-import { Button, ButtonGroup, Input } from "@rneui/base";
 import { GameType, NewPlayer } from "../interfaces/interfaces";
-import { createPlayer, getPlayers } from "../realm/Realm";
-import { useNavigation } from "@react-navigation/native";
-import RealmContext from '../models/RealmConfig';
 import { Player } from "../models/Player";
+import RealmContext from '../models/RealmConfig';
 
 const { useRealm } = RealmContext;
 
@@ -36,7 +34,8 @@ const RegisterNewPlayer = ({ visible, registeration }) => {
             playerName: playerName,
             gameType: type,
             regTime: format(new Date(), "dd.MM HH:mm"),
-            wins: 0
+            wins: 0,
+            onGoingGame: 0
         };
 
         realm.write(() => {

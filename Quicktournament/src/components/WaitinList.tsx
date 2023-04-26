@@ -1,37 +1,56 @@
-import React from "react";
-import { Text, View, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import { NewPlayer } from "../interfaces/interfaces";
 import { ListItem } from "react-native-elements";
 import { Avatar } from "@rneui/base";
+import RealmContext from '../models/RealmConfig';
+import { Player } from "../models/Player";
+
+const { useRealm, useObject } = RealmContext;
+type UpdatePlayer = Player;
 
 interface WaitingListProps {
-    waitingList: NewPlayer[]
+    waitingList: NewPlayer[],
+    addPlayerToGame: (player: NewPlayer) => void
 }
 
-const WaitingList = ({ waitingList }: WaitingListProps) => {
+const WaitingList = (props: WaitingListProps) => {
+
+    const realm = useRealm();
+
+    const startGame = (player: NewPlayer) => {
+        let updatePlayer = realm.objects<Player>("Player").filtered(`id=${player.id}`);
+        realm.write(() => {
+            updatePlayer[0].onGoingGame = 1;
+        })
+        props.addPlayerToGame(player);
+    }
+
     return (
         <View style={styles.waitingListContainer}>
             {
-                !waitingList.length ?
+                !props.waitingList.length ?
                 <View>
-                    <Text>Pelaajia ei löytynyt</Text>
+                    <Text>Ei jonossaolevia pelaajia</Text>
                 </View> :
                 <View>
-                    {waitingList.map((player, i) => {
+                    {props.waitingList.map((player, i) => {
                         return (
-                            <ListItem key={i} bottomDivider style={styles.listview}>
-                                <Avatar 
-                                    rounded 
-                                    icon={{
-                                        name: 'person-outline', 
-                                        type: 'material', 
-                                        size: 26}}
-                                    containerStyle={{ backgroundColor: '#c2c2c2'}}/>
-                                <ListItem.Content>
-                                    <ListItem.Title>{player.playerName}</ListItem.Title>
-                                    <ListItem.Subtitle>{player.regTime}</ListItem.Subtitle>
-                                </ListItem.Content>
-                            </ListItem>
+                            <TouchableOpacity key={i} onPress={() => startGame(player)}>
+                                <ListItem  bottomDivider style={styles.listview}>
+                                    <Avatar 
+                                        rounded 
+                                        icon={{
+                                            name: 'person-outline', 
+                                            type: 'material', 
+                                            size: 26}}
+                                        containerStyle={{ backgroundColor: '#c2c2c2'}}/>
+                                    <ListItem.Content>
+                                        <ListItem.Title>{player.playerName}</ListItem.Title>
+                                        <ListItem.Subtitle>{player.regTime}</ListItem.Subtitle>
+                                    </ListItem.Content>
+                                </ListItem>
+                            </TouchableOpacity>
                         )})
                     }
                 </View>

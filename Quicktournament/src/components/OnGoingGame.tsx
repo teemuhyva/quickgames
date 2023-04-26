@@ -1,49 +1,50 @@
-import React from "react";
 import { Avatar } from "@rneui/base";
-import { View, StyleSheet } from "react-native";
+import React from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Card, Text } from "react-native-elements";
+import RealmContext from '../models/RealmConfig';
+import { NewPlayer } from "../interfaces/interfaces";
 
-const OnGoingGame = () => {
+const { useRealm } = RealmContext;
+
+interface OnGoingGameProps {
+    onGoingGame: NewPlayer[]
+}
+
+const OnGoingGame = ({ onGoingGame} : OnGoingGameProps) => {
+
+    const handleGameEnd = () => {
+
+    }
 
     return (
         <View style={styles.ongoingGameContainer}>
-            <Card style={styles.cardStyle}>
-                <Card.Title>
-                    <Avatar rounded 
-                            icon={{
-                            name: 'person-outline', 
-                            type: 'material', 
-                            size: 26}}
-                            containerStyle={{ backgroundColor: '#c2c2c2'}}/>
-                </Card.Title>
-                <View style={styles.gameinfoWrapper}>
-                    <Text>
-                        Pelaaja 1
-                    </Text>
-                    <Text>
-                        1 voittoa
-                    </Text>
-                </View>
-                
-            </Card>
-            <Card style={styles.cardStyle}>
-                <Card.Title>
-                    <Avatar rounded 
-                            icon={{
-                            name: 'person-outline', 
-                            type: 'material', 
-                            size: 26}}
-                            containerStyle={{ backgroundColor: '#c2c2c2'}}/>
-            </Card.Title>
-                <View style={styles.gameinfoWrapper}>
-                    <Text>
-                        Pelaaja 2
-                    </Text>
-                    <Text>
-                        0 voittoa
-                    </Text>
-                </View>                
-            </Card>
+            {
+                onGoingGame.length < 1 ? (
+                    <View>
+                        <Text>Ei pelejä käynnissä</Text>
+                    </View>
+                ) : onGoingGame.map((player, i) => {
+                    return (
+                        <TouchableOpacity key={i} onPress={() => handleGameEnd()}>
+                            <Card style={styles.cardStyle}>
+                                <Card.Title>
+                                    <Avatar rounded 
+                                            icon={{
+                                            name: 'person-outline', 
+                                            type: 'material', 
+                                            size: 26}}
+                                            containerStyle={{ backgroundColor: '#c2c2c2'}}/>
+                                </Card.Title>
+                                <View style={styles.gameinfoWrapper}>
+                                    <Text>{player.playerName}</Text>
+                                    <Text>Voitot: {player.wins}</Text>
+                                </View>
+                            </Card>
+                        </TouchableOpacity>
+                    )
+                })
+            }
         </View>
     )
 }

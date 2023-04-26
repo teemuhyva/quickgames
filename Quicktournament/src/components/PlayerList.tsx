@@ -15,12 +15,14 @@ const PlayerList = ({ route }) => {
 
     const { gameType } = route.params;
     const [playerWaitingList, setPlayerWaitingList] = useState<NewPlayer[]>([]);
+    const [onGoingGame, setOnGoingGame] = useState<NewPlayer[]>([]);
     const [isVisible, setIsVisible] = useState(false);
 
     const realm = useRealm();
 
     useEffect(() => {
         fetchPlayerWaitingList();
+        fetchOngoingGame();
     }, []);
 
     if (playerWaitingList === undefined) {
@@ -31,9 +33,9 @@ const PlayerList = ({ route }) => {
         );
     }
 
-    const fetchPlayerWaitingList =() => {
+    const fetchPlayerWaitingList = () => {
         let playerList: any;
-        playerList = realm.objects<Player>("Player").filtered("gameType == $0", gameType);
+        playerList = realm.objects<Player>("Player").filtered("gameType == $0 && onGoingGame == 0", gameType);
 
         const players: NewPlayer[] = [];
         playerList.map((player: NewPlayer) => {
@@ -43,17 +45,34 @@ const PlayerList = ({ route }) => {
         setPlayerWaitingList(players);
     };
 
+    const fetchOngoingGame = () => {
+        let playerList: any;
+        playerList = realm.objects<Player>("Player").filtered("gameType == $0 && onGoingGame == 1", gameType);
+
+        const players: NewPlayer[] = [];
+        playerList.map((player: NewPlayer) => {
+            players.push(player);
+        });
+
+        setOnGoingGame(players);
+    }
+
     const registeration = (value: boolean, player: NewPlayer) => {        
         setPlayerWaitingList([...playerWaitingList, player]);
         setIsVisible(value);
+    }
+
+    const addPlayerToGame = (player: NewPlayer) => {
+        setPlayerWaitingList(playerWaitingList.filter(p => p.id !== player.id)); //remove player from waitinglist
+        setOnGoingGame([...onGoingGame, player]);
     }
 
     return (
         <View>
             <View style={styles.container}>
                 <View>
-                    <OnGoingGame />
-                    <WaitingList waitingList={playerWaitingList}/>
+                    <OnGoingGame onGoingGame={onGoingGame}/>
+                    <WaitingList waitingList={playerWaitingList} addPlayerToGame={addPlayerToGame}/>
                     
                 </View>
                 <View style={styles.buttonsContainer}>

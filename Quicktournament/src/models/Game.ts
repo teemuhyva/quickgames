@@ -1,5 +1,6 @@
 import { Realm } from '@realm/react';
 
+{/* This is only for statistic purposes */}
 export class Game {
     _id!: number;
     player1?: string;

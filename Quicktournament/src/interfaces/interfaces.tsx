@@ -18,6 +18,7 @@ export interface NewPlayer {
     gameType: GameType;
     regTime: string
     wins: number;
+    onGoingGame: number;
 }
 
 export type GameType = 'billiard' | 'snooker' | undefined;
