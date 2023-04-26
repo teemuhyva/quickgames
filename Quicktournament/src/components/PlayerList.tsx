@@ -61,7 +61,7 @@ const PlayerList = ({ route }) => {
     }
 
     const registeration = (value: boolean, player: NewPlayer) => {        
-        setPlayerWaitingList([...playerWaitingList, player]);
+        player.gameType === gameType && setPlayerWaitingList([...playerWaitingList, player]);
         setIsVisible(value);
     }
 
