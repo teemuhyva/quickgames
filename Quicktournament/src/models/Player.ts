@@ -6,6 +6,7 @@ export class Player {
     wins: number;
     lost: number;
     onGoingGame: number;
+    hasThreeWins: number;
 
     static schema = {
         name: "Player",
@@ -16,7 +17,8 @@ export class Player {
             regTime: "string",
             wins: "int",
             lost: "int",
-            onGoingGame: "int"
+            onGoingGame: "int",
+            hasThreeWins: "int"
         },
         primaryKey: 'id',
     };

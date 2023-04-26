@@ -36,7 +36,8 @@ const RegisterNewPlayer = ({ visible, registeration }) => {
             regTime: format(new Date(), "dd.MM HH:mm"),
             wins: 0,
             lost: 0,
-            onGoingGame: 0
+            onGoingGame: 0,
+            hasThreeWins: 0
         };
 
         realm.write(() => {

@@ -22,10 +22,20 @@ const OnGoingGame = ({game, fetchOngoingGame} : OnGoingGameProps) => {
         let getLosingPlayer = game.find(p => p.id !== player.id);
         let losingPlayer = getLosingPlayer && realm.objects<Player>("Player").filtered(`id=${getLosingPlayer.id}`)
         realm.write(() => {
-            winningPlayer[0].wins = winningPlayer[0].wins + 1;
+            const gameWins = winningPlayer[0].wins + 1;
             if(losingPlayer) {
+                winningPlayer[0].wins = gameWins;
                 losingPlayer[0].onGoingGame = 0;
                 losingPlayer[0].lost = 1;
+            }
+
+            {/* if only one player and they will drop out remove from game */}
+            if(game.length < 2) {
+                winningPlayer[0].lost = 1;
+            }
+            {/* If player gets 3 wins they will be removed from game*/}
+            if(gameWins >= 3) {
+                winningPlayer[0].hasThreeWins = 1;
             }
         });
 

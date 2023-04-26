@@ -20,6 +20,7 @@ export interface NewPlayer {
     wins: number;
     lost: number;
     onGoingGame: number;
+    hasThreeWins: number;
 }
 
 export type GameType = 'billiard' | 'snooker' | undefined;

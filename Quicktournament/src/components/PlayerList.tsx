@@ -50,7 +50,7 @@ const PlayerList = ({ route }) => {
 
     const fetchOngoingGame = () => {
         let playerList: any;
-        playerList = realm.objects<Player>("Player").filtered("gameType == $0 && onGoingGame == 1", gameType);
+        playerList = realm.objects<Player>("Player").filtered("gameType == $0 && onGoingGame == 1 && hasThreeWins == 0 && lost == 0", gameType);
 
         const players: NewPlayer[] = [];
         playerList.map((player: NewPlayer) => {
