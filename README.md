@@ -26,10 +26,10 @@ MongoDb
 View and react native logic
   - [x] Add player to list and show in listview ( each player shown in Card component)
   - [ ] Add daytime to filter is it billiard or snooker
-  - [ ] Add game that contains 2 players ( Game shown in Card component)
-  - [ ] Queue for ongoing game
+  - [x] Add game that contains 2 players ( Game shown in Card component)
+  - [x] Queue for ongoing game
   - [x] Queue for players waiting
   - [ ] Horizontal line to separate above ( when configured for tablet )
-  - [x] Navigation. (Hamburger model)
+  - [x] Navigation. (Bottom navigation with tabs)
 
 
