@@ -5,7 +5,7 @@ import { Game } from '../models/Game';
 const config = {
     schema: [Player, Game],
     deleteRealmIfMigrationNeeded: true,
-    schemaVersion: 3
+    schemaVersion: 2
 }
 
 export default createRealmContext(config);

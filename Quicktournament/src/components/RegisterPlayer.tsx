@@ -35,6 +35,7 @@ const RegisterNewPlayer = ({ visible, registeration }) => {
             gameType: type,
             regTime: format(new Date(), "dd.MM HH:mm"),
             wins: 0,
+            lost: 0,
             onGoingGame: 0
         };
 

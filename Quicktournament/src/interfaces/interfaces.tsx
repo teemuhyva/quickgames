@@ -18,6 +18,7 @@ export interface NewPlayer {
     gameType: GameType;
     regTime: string
     wins: number;
+    lost: number;
     onGoingGame: number;
 }
 

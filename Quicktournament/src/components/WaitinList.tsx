@@ -6,8 +6,7 @@ import { Avatar } from "@rneui/base";
 import RealmContext from '../models/RealmConfig';
 import { Player } from "../models/Player";
 
-const { useRealm, useObject } = RealmContext;
-type UpdatePlayer = Player;
+const { useRealm } = RealmContext;
 
 interface WaitingListProps {
     waitingList: NewPlayer[],

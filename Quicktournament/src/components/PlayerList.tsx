@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { NewPlayer } from "../interfaces/interfaces";
 import OnGoingGame from "./OnGoingGame";
@@ -21,9 +21,12 @@ const PlayerList = ({ route }) => {
     const realm = useRealm();
 
     useEffect(() => {
-        fetchPlayerWaitingList();
-        fetchOngoingGame();
+       fetchPlayerWaitingList();
     }, []);
+
+    useEffect(() => {
+        fetchOngoingGame();
+    }, [])
 
     if (playerWaitingList === undefined) {
         return (
@@ -35,7 +38,7 @@ const PlayerList = ({ route }) => {
 
     const fetchPlayerWaitingList = () => {
         let playerList: any;
-        playerList = realm.objects<Player>("Player").filtered("gameType == $0 && onGoingGame == 0", gameType);
+        playerList = realm.objects<Player>("Player").filtered("gameType == $0 && onGoingGame == 0 && lost == 0", gameType);
 
         const players: NewPlayer[] = [];
         playerList.map((player: NewPlayer) => {
@@ -71,7 +74,7 @@ const PlayerList = ({ route }) => {
         <View>
             <View style={styles.container}>
                 <View>
-                    <OnGoingGame onGoingGame={onGoingGame}/>
+                    <OnGoingGame game={onGoingGame} fetchOngoingGame={fetchOngoingGame}/>
                     <WaitingList waitingList={playerWaitingList} addPlayerToGame={addPlayerToGame}/>
                     
                 </View>
