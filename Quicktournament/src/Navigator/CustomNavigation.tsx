@@ -9,8 +9,8 @@ const Stack = createStackNavigator();
 const GameScreenNavigation = () => {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="Games" component={Games}/>
-            <Stack.Screen name="PlayerList" component={PlayerList} />
+            <Stack.Screen name="Games" component={Games} options={{ title: "Pelit"}}/>
+            <Stack.Screen name="PlayerList" component={PlayerList}  options={{ title: "Pelaajat"}}/>
         </Stack.Navigator>
     )
 }

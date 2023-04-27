@@ -49,7 +49,6 @@ const RegisterNewPlayer = ({ visible, registeration }) => {
 
 
     return (
-        <View style={styles.modalCenteredView}>
             <Modal
                 style={styles.modalStyle}
                 animationType="slide"
@@ -72,29 +71,25 @@ const RegisterNewPlayer = ({ visible, registeration }) => {
                                 setSelectedIndex(value)
                                 value === 0 || value === undefined ? setGame('billiard') : setGame('snooker');
                             }}/>
-                        <Button title='Rekisteröi' onPress={() => createPlayer()} />
+                        <Button containerStyle={{
+                                    width: 200,
+                                    marginHorizontal: 10,
+                                    marginVertical: 10,
+                                }} title='Rekisteröi' onPress={() => createPlayer()} />
                     </View>
                 </View>
             </Modal>
-        </View>
     );
 };
 
 const styles = StyleSheet.create({
     centeredView: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
+        justifyContent: 'flex-end',
     },
     modalView: {
         backgroundColor: 'white',
         padding: 15,
-        alignItems: 'center',
-    },
-    modalCenteredView: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
     },
     modalStyle: {
         justifyContent: 'flex-end',
