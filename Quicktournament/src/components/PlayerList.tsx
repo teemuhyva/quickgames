@@ -6,11 +6,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { generateWaitingList, removePlayerFromWaitinList } from "../../store/reducers/playerSlice";
 import { RootState } from "../../store/store";
 import RealmContext from '../Realm/RealmConfig';
-import { NewPlayer } from "../interfaces/interfaces";
+import { Game, NewPlayer } from "../interfaces/interfaces";
 import { Player } from "../models/Player";
 import OnGoingGame from "./OnGoingGame";
 import RegisterNewPlayer from "./RegisterPlayer";
 import WaitingList from "./WaitinList";
+import { addGamePlayed } from "../../store/reducers/gameSlice";
 
 
 const { useRealm } = RealmContext;
@@ -29,8 +30,8 @@ const PlayerList = ({ route }) => {
     const realm = useRealm()
 
     useEffect(() => {
-       fetchOngoingGame();
-    }, [])
+        fetchOngoingGame();
+    }, [players]);
 
     useEffect(() => {
         //deleteAll();
@@ -78,12 +79,12 @@ const PlayerList = ({ route }) => {
         let playerList: any;
         playerList = realm.objects<Player>("Player").filtered("gameType == $0 && onGoingGame == 1 && hasThreeWins == 0 && lost == 0", gameType);
 
-        const players: NewPlayer[] = [];
+        const ongoingGame: NewPlayer[] = [];
         playerList.map((player: NewPlayer) => {
-            players.push(player);
+            ongoingGame.push(player);
         });
 
-        setOnGoingGame(players);
+        return ongoingGame;
     }
 
     const addPlayerToGame = (player: NewPlayer) => {
@@ -95,7 +96,7 @@ const PlayerList = ({ route }) => {
         <View>
             <View style={styles.container}>
                 <View>
-                    <OnGoingGame game={onGoingGame} fetchOngoingGame={fetchOngoingGame}/>
+                    <OnGoingGame game={onGoingGame}/>
                     <WaitingList waitingList={playersByGameType} addPlayerToGame={addPlayerToGame}/>
                     
                 </View>

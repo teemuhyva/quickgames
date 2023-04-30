@@ -2,26 +2,29 @@ import { Avatar } from "@rneui/base";
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Card, Text } from "react-native-elements";
-import { NewPlayer } from "../interfaces/interfaces";
+import { Game, NewPlayer } from "../interfaces/interfaces";
 import RealmContext from '../Realm/RealmConfig';
 import { Player } from "../models/Player";
+import { useDispatch } from "react-redux";
+import { addGamePlayed } from "../../store/reducers/gameSlice";
+import { updatePlayer } from "../../store/reducers/playerSlice";
 
 interface OnGoingGameProps {
     game: NewPlayer[],
-    fetchOngoingGame: () => void;
 }
 
 const { useRealm } = RealmContext;
 
-const OnGoingGame = ({game, fetchOngoingGame} : OnGoingGameProps) => {
+const OnGoingGame = ({game} : OnGoingGameProps) => {
     
+    const dispatch = useDispatch();
     const realm = useRealm();
 
-    const handleGameEnd = (player: NewPlayer) => {
+    const handleGameEnd = (player: NewPlayer, index: number) => {
         
         let winningPlayer = realm.objects<Player>("Player").filtered(`id=${player.id}`);
         let getLosingPlayer = game.find(p => p.id !== player.id);
-        let losingPlayer = getLosingPlayer && realm.objects<Player>("Player").filtered(`id=${getLosingPlayer.id}`)
+        let losingPlayer = getLosingPlayer && realm.objects<Player>("Player").filtered(`id=${getLosingPlayer.id}`);
         realm.write(() => {
             const gameWins = winningPlayer[0].wins + 1;
             if(losingPlayer) {
@@ -40,7 +43,22 @@ const OnGoingGame = ({game, fetchOngoingGame} : OnGoingGameProps) => {
             }
         });
 
-        fetchOngoingGame();
+        const gameFinished: Game = {
+            _id: Math.floor((Math.random() * 1000) + 1),
+            player1: index == 0 ? winningPlayer[0]?.playerName : getLosingPlayer?.playerName,
+            player1Score: index == 0 ? winningPlayer[0].wins : getLosingPlayer?.wins,
+            player2: index == 0 ? getLosingPlayer?.playerName : winningPlayer[0]?.playerName,
+            player2Score: index == 0 ? getLosingPlayer?.wins : winningPlayer[0].wins
+        };
+
+        realm.write(() => {
+            realm.create('Game', gameFinished)
+        })
+
+        const players: NewPlayer[] = [];
+        players.push(winningPlayer)
+        dispatch(updatePlayer({playerOne: winningPlayer, playerTwo: losingPlayer}))
+        dispatch(addGamePlayed(gameFinished));
     }
 
     return (
@@ -52,7 +70,7 @@ const OnGoingGame = ({game, fetchOngoingGame} : OnGoingGameProps) => {
                     </View>
                 ) : game.map((player, i) => {
                     return (
-                        <TouchableOpacity key={i} onPress={() => handleGameEnd(player)}>
+                        <TouchableOpacity key={i} onPress={() => handleGameEnd(player, i)}>
                             <Card style={styles.cardStyle}>
                                 <Card.Title>
                                     <Avatar rounded 

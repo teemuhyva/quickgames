@@ -14,7 +14,7 @@ export default function BottomTabs() {
 
           if (route.name === 'Pelit') {
             iconName = 'search';
-          } else if (route.name === 'Sijoitukset') {
+          } else if (route.name === 'Tulokset') {
             iconName = 'info';
           }
 
@@ -22,7 +22,7 @@ export default function BottomTabs() {
         },
       })}>
         <Tab.Screen name="Pelit" component={GameScreenNavigation} />
-        <Tab.Screen name='Sijoitukset' component={Scores} />
+        <Tab.Screen name='Tulokset' component={Scores} />
       </Tab.Navigator>
     );
   }

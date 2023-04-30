@@ -20,7 +20,7 @@ export {GameScreenNavigation};
 const ScoreScreenNavigation = () => {
     return (
         <Stack.Navigator>
-            <Stack.Screen name="Scores" component={Scores}/>
+            <Stack.Screen name="Scores" component={Scores} options={{ title: "Tulokset"}}/>
         </Stack.Navigator>
     )
 }

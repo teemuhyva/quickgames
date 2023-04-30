@@ -4,16 +4,18 @@ import { Realm } from '@realm/react';
 export class Game {
     _id!: number;
     player1?: string;
+    player1Score: number;
     player2?: string;
-    finished?: boolean;
+    player2Score: number;
 
     public static schema = {
         name: "Game",
         properties: {
             _id: "int",
             player1: "string",
+            player1Score: "int",
             player2: "string",
-            finished: { type: 'bool', default: false }
+            player2Score: "int"
         },
         primaryKey: '_id',
     };

@@ -1,15 +1,9 @@
-export interface CurrentGame {
-    id: number;
-    player1: string;
-    player2: string;
-    finished: boolean;
-}
-
 export interface Game {
-    id: string;
-    player1: string;
-    player2: string;
-    win: string
+    _id: number;
+    player1?: string;
+    player1Score?: number;
+    player2?: string;
+    player2Score?: number;
 }
 
 export interface NewPlayer {
@@ -27,7 +21,13 @@ export interface Players {
     players: NewPlayer[]
 }
 
+export interface Games {
+    games: Game[]
+}
+
 export type GameType = 'billiard' | 'snooker' | undefined;
 
 const AddPlayer: string = "addplayer"
+const UpdateGame: string = "updategame"
 export { AddPlayer }
+export { UpdateGame }
