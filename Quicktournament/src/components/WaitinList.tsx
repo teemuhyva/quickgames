@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
-import { NewPlayer } from "../interfaces/interfaces";
-import { ListItem } from "react-native-elements";
 import { Avatar } from "@rneui/base";
-import RealmContext from '../models/RealmConfig';
+import React from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ListItem } from "react-native-elements";
+import RealmContext from '../Realm/RealmConfig';
+import { NewPlayer } from "../interfaces/interfaces";
 import { Player } from "../models/Player";
 
 const { useRealm } = RealmContext;

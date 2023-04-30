@@ -1,4 +1,4 @@
-import {createRealmContext,Realm} from '@realm/react';
+import {createRealmContext, Realm} from '@realm/react';
 import { Player } from '../models/Player';
 import { Game } from '../models/Game';
 
@@ -8,5 +8,6 @@ const config = {
     schemaVersion: 2
 }
 
-export default createRealmContext(config);
+const { RealmProvider, useQuery, useRealm} = createRealmContext(config);
+export default { RealmProvider, useQuery, useRealm}
     

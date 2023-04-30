@@ -3,21 +3,22 @@ import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Card, Text } from "react-native-elements";
 import { NewPlayer } from "../interfaces/interfaces";
+import RealmContext from '../Realm/RealmConfig';
 import { Player } from "../models/Player";
-import RealmContext from '../models/RealmConfig';
-
-const { useRealm } = RealmContext;
 
 interface OnGoingGameProps {
     game: NewPlayer[],
     fetchOngoingGame: () => void;
 }
 
-const OnGoingGame = ({game, fetchOngoingGame} : OnGoingGameProps) => {
+const { useRealm } = RealmContext;
 
+const OnGoingGame = ({game, fetchOngoingGame} : OnGoingGameProps) => {
+    
     const realm = useRealm();
 
     const handleGameEnd = (player: NewPlayer) => {
+        
         let winningPlayer = realm.objects<Player>("Player").filtered(`id=${player.id}`);
         let getLosingPlayer = game.find(p => p.id !== player.id);
         let losingPlayer = getLosingPlayer && realm.objects<Player>("Player").filtered(`id=${getLosingPlayer.id}`)

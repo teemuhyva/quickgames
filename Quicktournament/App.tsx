@@ -3,19 +3,21 @@ import { NavigationContainer } from '@react-navigation/native';
 import type { ReactNode } from 'react';
 import React from 'react';
 import BottomTabs from './src/Navigator/TabNavigator';
-//import { RealmContext } from './src/models/RealmConfig';
-import RealmContext from '../Quicktournament/src/models/RealmConfig'
+import { store } from './store/store';
+import { Provider } from "react-redux";
+import RealmContext from './src/Realm/RealmConfig'
 
 const { RealmProvider } = RealmContext;
 
 const App: () => ReactNode = () => {
 
   return (
-    
       <NavigationContainer>
-        <RealmProvider>
-          <BottomTabs />
-        </RealmProvider>
+        <Provider store={store}>
+          <RealmProvider>
+            <BottomTabs />
+          </RealmProvider>
+        </Provider>
       </NavigationContainer>    
   )
 }
