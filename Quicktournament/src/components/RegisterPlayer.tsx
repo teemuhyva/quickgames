@@ -5,17 +5,20 @@ import React, { useState } from "react";
 import { Modal, StyleSheet, View } from "react-native";
 import { GameType, NewPlayer } from "../interfaces/interfaces";
 import { Player } from "../models/Player";
-import RealmContext from '../models/RealmConfig';
+import RealmContext from "../Realm/RealmConfig"
+import { useDispatch } from "react-redux";
+import { add } from "../../store/reducers/playerSlice";
 
 const { useRealm } = RealmContext;
 
-const RegisterNewPlayer = ({ visible, registeration }) => {
+const RegisterNewPlayer = ({ visible }) => {
 
     const [playerName, setPlayerName] = useState('');
     const [game, setGame] = useState<GameType>('billiard');
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     const realm = useRealm();
+    const dispatch = useDispatch()
 
     const getOrCreatePlayerId = () => {
         let playerList: any;
@@ -43,7 +46,8 @@ const RegisterNewPlayer = ({ visible, registeration }) => {
         realm.write(() => {
             realm.create('Player', player);
         })
-        registeration(false, player);
+        
+        dispatch(add(player));
     };
 
 

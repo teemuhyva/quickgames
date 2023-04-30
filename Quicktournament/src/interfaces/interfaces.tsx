@@ -23,4 +23,11 @@ export interface NewPlayer {
     hasThreeWins: number;
 }
 
+export interface Players {
+    players: NewPlayer[]
+}
+
 export type GameType = 'billiard' | 'snooker' | undefined;
+
+const AddPlayer: string = "addplayer"
+export { AddPlayer }

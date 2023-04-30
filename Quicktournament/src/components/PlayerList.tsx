@@ -1,34 +1,53 @@
 
-import React, { useEffect, useState, useCallback } from "react";
-import { Text, View, StyleSheet } from "react-native";
-import { NewPlayer } from "../interfaces/interfaces";
-import OnGoingGame from "./OnGoingGame";
-import WaitingList from "./WaitinList";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
 import { Button } from "react-native-elements";
-import RegisterNewPlayer from "./RegisterPlayer";
-import RealmContext from '../models/RealmConfig';
+import { useDispatch, useSelector } from "react-redux";
+import { generateWaitingList, removePlayerFromWaitinList } from "../../store/reducers/playerSlice";
+import { RootState } from "../../store/store";
+import RealmContext from '../Realm/RealmConfig';
+import { NewPlayer } from "../interfaces/interfaces";
 import { Player } from "../models/Player";
+import OnGoingGame from "./OnGoingGame";
+import RegisterNewPlayer from "./RegisterPlayer";
+import WaitingList from "./WaitinList";
+
 
 const { useRealm } = RealmContext;
 
 const PlayerList = ({ route }) => {
 
     const { gameType } = route.params;
-    const [playerWaitingList, setPlayerWaitingList] = useState<NewPlayer[]>([]);
+
+    const players: NewPlayer[] = useSelector((state: RootState) => state.player.players);
+
     const [onGoingGame, setOnGoingGame] = useState<NewPlayer[]>([]);
     const [isVisible, setIsVisible] = useState(false);
+    const [playersByGameType, setPlayersByGametype] = useState<NewPlayer[]>([])
 
-    const realm = useRealm();
-
-    useEffect(() => {
-       fetchPlayerWaitingList();
-    }, []);
+    const dispatch = useDispatch();
+    const realm = useRealm()
 
     useEffect(() => {
-        fetchOngoingGame();
+       fetchOngoingGame();
     }, [])
 
-    if (playerWaitingList === undefined) {
+    useEffect(() => {
+        //deleteAll();
+        setIsVisible(false);
+
+        if(players.length < 1) {
+            const playerList = getPlayers();
+            if(playerList.length) {
+                dispatch(generateWaitingList(playerList));
+            } 
+        } else {
+            const playerList = players.filter((p) => p.gameType === gameType && p.onGoingGame == 0 && p.lost == 0);
+            setPlayersByGametype(playerList);
+        } 
+    }, [players])
+
+    if (players === undefined) {
         return (
             <View style={{ flex: 1, padding: 20 }}>
                 <Text>Ladataan pelaajat ja pelit</Text>
@@ -36,17 +55,24 @@ const PlayerList = ({ route }) => {
         );
     }
 
-    const fetchPlayerWaitingList = () => {
+    const deleteAll = () => {
+        realm.write(() => {
+            realm.deleteAll();
+        });
+    }
+
+    const getPlayers = () => {
+
         let playerList: any;
         playerList = realm.objects<Player>("Player").filtered("gameType == $0 && onGoingGame == 0 && lost == 0", gameType);
-
+    
         const players: NewPlayer[] = [];
         playerList.map((player: NewPlayer) => {
             players.push(player);
         });
-
-        setPlayerWaitingList(players);
-    };
+    
+        return playerList;
+    }
 
     const fetchOngoingGame = () => {
         let playerList: any;
@@ -60,13 +86,8 @@ const PlayerList = ({ route }) => {
         setOnGoingGame(players);
     }
 
-    const registeration = (value: boolean, player: NewPlayer) => {        
-        player.gameType === gameType && setPlayerWaitingList([...playerWaitingList, player]);
-        setIsVisible(value);
-    }
-
     const addPlayerToGame = (player: NewPlayer) => {
-        setPlayerWaitingList(playerWaitingList.filter(p => p.id !== player.id)); //remove player from waitinglist
+        dispatch(removePlayerFromWaitinList(player));
         setOnGoingGame([...onGoingGame, player]);
     }
 
@@ -75,7 +96,7 @@ const PlayerList = ({ route }) => {
             <View style={styles.container}>
                 <View>
                     <OnGoingGame game={onGoingGame} fetchOngoingGame={fetchOngoingGame}/>
-                    <WaitingList waitingList={playerWaitingList} addPlayerToGame={addPlayerToGame}/>
+                    <WaitingList waitingList={playersByGameType} addPlayerToGame={addPlayerToGame}/>
                     
                 </View>
                 <View style={styles.buttonsContainer}>
@@ -97,7 +118,7 @@ const PlayerList = ({ route }) => {
                     />
                 </View>
             </View>
-            <RegisterNewPlayer visible={isVisible} registeration={registeration}/>
+            <RegisterNewPlayer visible={isVisible}/>
         </View>
     );
 }
