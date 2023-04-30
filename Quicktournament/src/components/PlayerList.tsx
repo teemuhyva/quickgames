@@ -64,14 +64,15 @@ const PlayerList = ({ route }) => {
     const getPlayers = () => {
 
         let playerList: any;
-        playerList = realm.objects<Player>("Player").filtered("gameType == $0 && onGoingGame == 0 && lost == 0", gameType);
+        playerList = realm.objects<Player>("Player");
     
         const players: NewPlayer[] = [];
         playerList.map((player: NewPlayer) => {
-            players.push(player);
+            const p = JSON.stringify(player)
+            players.push(JSON.parse(p));
         });
     
-        return playerList;
+        return players;
     }
 
     const fetchOngoingGame = () => {
