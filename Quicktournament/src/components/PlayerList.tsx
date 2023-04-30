@@ -71,7 +71,6 @@ const PlayerList = ({ route }) => {
             const p = JSON.stringify(player)
             players.push(JSON.parse(p));
         });
-    
         return players;
     }
 
