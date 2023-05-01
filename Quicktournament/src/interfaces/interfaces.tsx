@@ -1,9 +1,12 @@
 export interface Game {
     _id: number;
+    player1Id?: number;
     player1?: string;
     player1Score?: number;
+    player2Id?: number;
     player2?: string;
     player2Score?: number;
+    finished: number;
 }
 
 export interface NewPlayer {
@@ -22,7 +25,8 @@ export interface Players {
 }
 
 export interface Games {
-    games: Game[]
+    games: Game[],
+    game: Game
 }
 
 export type GameType = 'billiard' | 'snooker' | undefined;

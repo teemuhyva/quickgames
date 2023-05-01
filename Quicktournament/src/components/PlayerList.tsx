@@ -21,8 +21,8 @@ const PlayerList = ({ route }) => {
     const { gameType } = route.params;
 
     const players: NewPlayer[] = useSelector((state: RootState) => state.player.players);
+    const game: Game = useSelector((state: RootState) => state.game.game);
 
-    const [onGoingGame, setOnGoingGame] = useState<NewPlayer[]>([]);
     const [isVisible, setIsVisible] = useState(false);
     const [playersByGameType, setPlayersByGametype] = useState<NewPlayer[]>([])
 
@@ -89,15 +89,14 @@ const PlayerList = ({ route }) => {
 
     const addPlayerToGame = (player: NewPlayer) => {
         dispatch(removePlayerFromWaitinList(player));
-        setOnGoingGame([...onGoingGame, player]);
     }
 
     return (
         <View>
             <View style={styles.container}>
                 <View>
-                    <OnGoingGame game={onGoingGame}/>
-                    <WaitingList waitingList={playersByGameType} addPlayerToGame={addPlayerToGame}/>
+                    <OnGoingGame game={game}/>
+                    <WaitingList waitingList={playersByGameType} />
                     
                 </View>
                 <View style={styles.buttonsContainer}>
