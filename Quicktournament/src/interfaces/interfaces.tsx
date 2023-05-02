@@ -12,7 +12,7 @@ export interface Game {
 export interface NewPlayer {
     id: number;
     playerName: string;
-    gameType: GameType;
+    gameType: string;
     regTime: string
     wins: number;
     lost: number;
@@ -28,8 +28,6 @@ export interface Games {
     games: Game[],
     game: Game
 }
-
-export type GameType = 'billiard' | 'snooker' | undefined;
 
 const AddPlayer: string = "addplayer"
 const UpdateGame: string = "updategame"

@@ -7,6 +7,8 @@ import { Game, NewPlayer } from "../interfaces/interfaces";
 import { Player } from "../models/Player";
 import { useDispatch } from "react-redux";
 import { updateGame } from "../../store/reducers/gameSlice";
+import { updatePlayer } from "../../store/reducers/playerSlice";
+import { serializeObject } from "../utils/utils";
 
 const { useRealm } = RealmContext;
 
@@ -20,12 +22,15 @@ const WaitingList = (props: WaitingListProps) => {
     const dispatch = useDispatch();
 
     const startGame = (player: NewPlayer) => {
-        let updatePlayer = realm.objects<Player>("Player").filtered(`id=${player.id}`);
+        let playerUpdate = realm.objects<Player>("Player").filtered(`id=${player.id}`);
         realm.write(() => {
-            updatePlayer[0].onGoingGame = 1;
+            playerUpdate[0].onGoingGame = 1;
         })
 
-        let game = realm.objects<Game>("Game");
+        dispatch(updatePlayer(serializeObject(playerUpdate[0])));
+        
+
+        let game = realm.objects<Game>("Game").filtered("finished=0");
         if(game.length) {
             realm.write(() => {
                 game[0].player2Id = player.id
@@ -33,16 +38,14 @@ const WaitingList = (props: WaitingListProps) => {
                 game[0].player2Score = 0
             })
 
-            dispatch(updateGame(game[0]));
+            const serializeGame = serializeObject(game[0]);
+            dispatch(updateGame(serializeGame));
         } else {
             const createGame: Game = {
                 _id: Math.floor(Math.random() * 1000),
                 player1Id: player.id,
                 player1: player.playerName,
                 player1Score: 0,
-                player2Id: undefined,
-                player2: undefined,
-                player2Score: undefined,
                 finished: 0
             }
 

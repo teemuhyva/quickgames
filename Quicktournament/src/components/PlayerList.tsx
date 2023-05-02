@@ -11,7 +11,8 @@ import { Player } from "../models/Player";
 import OnGoingGame from "./OnGoingGame";
 import RegisterNewPlayer from "./RegisterPlayer";
 import WaitingList from "./WaitinList";
-import { addGamePlayed } from "../../store/reducers/gameSlice";
+import { updateGame } from "../../store/reducers/gameSlice";
+import { serializeObject } from "../utils/utils";
 
 
 const { useRealm } = RealmContext;
@@ -21,17 +22,13 @@ const PlayerList = ({ route }) => {
     const { gameType } = route.params;
 
     const players: NewPlayer[] = useSelector((state: RootState) => state.player.players);
-    const game: Game = useSelector((state: RootState) => state.game.game);
+    
 
     const [isVisible, setIsVisible] = useState(false);
-    const [playersByGameType, setPlayersByGametype] = useState<NewPlayer[]>([])
+    const [playersByGameType, setPlayersByGametype] = useState<NewPlayer[]>([]);
 
     const dispatch = useDispatch();
     const realm = useRealm()
-
-    useEffect(() => {
-        fetchOngoingGame();
-    }, [players]);
 
     useEffect(() => {
         //deleteAll();
@@ -69,22 +66,9 @@ const PlayerList = ({ route }) => {
     
         const players: NewPlayer[] = [];
         playerList.map((player: NewPlayer) => {
-            const p = JSON.stringify(player)
-            players.push(JSON.parse(p));
+            players.push(serializeObject(player));
         });
         return players;
-    }
-
-    const fetchOngoingGame = () => {
-        let playerList: any;
-        playerList = realm.objects<Player>("Player").filtered("gameType == $0 && onGoingGame == 1 && hasThreeWins == 0 && lost == 0", gameType);
-
-        const ongoingGame: NewPlayer[] = [];
-        playerList.map((player: NewPlayer) => {
-            ongoingGame.push(player);
-        });
-
-        return ongoingGame;
     }
 
     const addPlayerToGame = (player: NewPlayer) => {
@@ -95,7 +79,7 @@ const PlayerList = ({ route }) => {
         <View>
             <View style={styles.container}>
                 <View>
-                    <OnGoingGame game={game}/>
+                    <OnGoingGame />
                     <WaitingList waitingList={playersByGameType} />
                     
                 </View>
