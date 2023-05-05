@@ -3,13 +3,13 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Card, Text } from "react-native-elements";
 import { useDispatch, useSelector } from "react-redux";
-import { addGamePlayed, generateEndedGamesList, updateGame } from "../../store/reducers/gameSlice";
+import { addGamePlayed, updateGame } from "../../store/reducers/gameSlice";
+import { updatePlayer } from "../../store/reducers/playerSlice";
 import { RootState } from "../../store/store";
 import RealmContext from '../Realm/RealmConfig';
 import { NewPlayer } from "../interfaces/interfaces";
 import { Game } from "../models/Game";
 import { Player } from "../models/Player";
-import { updatePlayer } from "../../store/reducers/playerSlice";
 import { serializeObject } from "../utils/utils";
 
 
@@ -32,27 +32,9 @@ const OnGoingGame = (gameType: any) => {
             } else {
                 setOnGoingGame(undefined);
             }
-        } else {
-            const fetchGames = fetchOngoingGame();
-            if(fetchGames !== undefined) {
-                dispatch(generateEndedGamesList(fetchGames));
-            } else {
-                setOnGoingGame(undefined);
-            }
         }
 
     }, [games]);
-    const fetchOngoingGame = () => {
-        let allGames: any
-        allGames = realm.objects<Game>("Game");
-        
-        const games: Game[] = [];
-        allGames.map((game: Game) => {
-            games.push(serializeObject(game));
-        })
-
-        return games;
-    }
 
     const NoGamesGoing = () => {
         return (
