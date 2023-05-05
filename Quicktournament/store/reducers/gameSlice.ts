@@ -5,6 +5,7 @@ const initialState: Games = {
     games: [],
     game: {
         _id: 0,
+        gameType: "",
         player1: "",
         player1Score: 0,
         player2: "",
@@ -21,7 +22,18 @@ export const gameSlice = createSlice({
             state.games.push(action.payload);
         },
         updateGame: (state: Games, action: PayloadAction<Game>) => {
-            state.game = action.payload;
+            const updatedGame = state.games.map(game => {
+                if(game._id === action.payload._id) {
+                    return { ...game, ...action.payload}
+                } else {
+                    return game;
+                }
+            })
+
+            return {
+                ...state,
+                games: updatedGame
+            };       
         },
         generateEndedGamesList: (state, action: PayloadAction<Game[]>) => {
             action.payload.map(p => {

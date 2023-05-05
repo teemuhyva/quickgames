@@ -22,7 +22,6 @@ const PlayerList = ({ route }) => {
     const { gameType } = route.params;
 
     const players: NewPlayer[] = useSelector((state: RootState) => state.player.players);
-    
 
     const [isVisible, setIsVisible] = useState(false);
     const [playersByGameType, setPlayersByGametype] = useState<NewPlayer[]>([]);
@@ -43,6 +42,8 @@ const PlayerList = ({ route }) => {
             const playerList = players.filter((p) => p.gameType === gameType && p.onGoingGame == 0 && p.lost == 0);
             setPlayersByGametype(playerList);
         } 
+         
+        
     }, [players])
 
     if (players === undefined) {
@@ -79,7 +80,7 @@ const PlayerList = ({ route }) => {
         <View>
             <View style={styles.container}>
                 <View>
-                    <OnGoingGame />
+                    <OnGoingGame gameType={gameType}/>
                     <WaitingList waitingList={playersByGameType} />
                     
                 </View>

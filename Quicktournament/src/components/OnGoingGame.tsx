@@ -3,19 +3,20 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Card, Text } from "react-native-elements";
 import { useDispatch, useSelector } from "react-redux";
-import { addGamePlayed, updateGame } from "../../store/reducers/gameSlice";
+import { addGamePlayed, generateEndedGamesList, updateGame } from "../../store/reducers/gameSlice";
 import { RootState } from "../../store/store";
 import RealmContext from '../Realm/RealmConfig';
 import { NewPlayer } from "../interfaces/interfaces";
 import { Game } from "../models/Game";
 import { Player } from "../models/Player";
 import { updatePlayer } from "../../store/reducers/playerSlice";
+import { serializeObject } from "../utils/utils";
 
 
 const { useRealm } = RealmContext;
 
-const OnGoingGame = () => {
-    const game: Game = useSelector((state: RootState) => state.game.game);
+const OnGoingGame = (gameType: any) => {
+    const games: Game[] = useSelector((state: RootState) => state.game.games);
     const players: NewPlayer[] = useSelector((state: RootState) => state.player.players);
 
     const [ongoingGame, setOnGoingGame] = useState<Game>();
@@ -24,28 +25,33 @@ const OnGoingGame = () => {
     const realm = useRealm();
 
     useEffect(() => {
-        if(game) {
-            if(game.player1 === "") {
-                fetchOngoingGame();
+        if(games.length) {
+            const game = games.filter(game => game.finished === 0 && game.player1 !== "" && game.gameType === gameType["gameType"]);
+            if(game.length) {
+                setOnGoingGame(game[0]);
             } else {
-                if(game.finished === 0) {
-                    setOnGoingGame(game);
-                } else {
-                    setOnGoingGame(undefined);
-                }
+                setOnGoingGame(undefined);
             }
         } else {
-            setOnGoingGame(undefined);
+            const fetchGames = fetchOngoingGame();
+            if(fetchGames !== undefined) {
+                dispatch(generateEndedGamesList(fetchGames));
+            } else {
+                setOnGoingGame(undefined);
+            }
         }
 
-    }, [game]);
-
+    }, [games]);
     const fetchOngoingGame = () => {
-        const ongoingGame = realm.objects<Game>("Game");
-        if(ongoingGame[0] !== undefined) {
-            const game = JSON.stringify(ongoingGame[0])
-            dispatch(updateGame(JSON.parse(game)));
-        }
+        let allGames: any
+        allGames = realm.objects<Game>("Game");
+        
+        const games: Game[] = [];
+        allGames.map((game: Game) => {
+            games.push(serializeObject(game));
+        })
+
+        return games;
     }
 
     const NoGamesGoing = () => {
@@ -57,12 +63,13 @@ const OnGoingGame = () => {
     }
 
     const CurrentGame = ({game}) => {
+
         const handleGameEnd = (playerId: number = 0) => {
 
             //first handle playerlist for winning and losing players
             let winningPlayer = realm.objects<Player>("Player").filtered(`id=${playerId}`);
             let losingPlayerId = game &&  game.player1Id !== playerId ? players.find(p => p.id === game.player1Id) : players.find(p => p.id === game.player2Id);
-            let losingPlayer = realm.objects<Player>("Player").filtered(`id=${losingPlayerId?.id}`);
+            let losingPlayer = losingPlayerId && realm.objects<Player>("Player").filtered(`id=${losingPlayerId.id}`);
     
             const gameWins = winningPlayer[0].wins + 1;
     
@@ -71,7 +78,9 @@ const OnGoingGame = () => {
             })
     
             realm.write(() => {
-                losingPlayer[0].lost = 1;
+                if(losingPlayer) {
+                    losingPlayer[0].lost = 1;
+                }
             })
     
             let getWinningPlayer = players.find(p => p.id === playerId);
@@ -96,7 +105,7 @@ const OnGoingGame = () => {
             }
     
             {/* if only one player and they will drop out remove from game */}
-            if(game.player2 === "") {
+            if(game.player2 === "" || game.player2 === undefined) {
                 realm.write(() => {
                     winningPlayer[0].lost = 1;
                 })
@@ -109,19 +118,23 @@ const OnGoingGame = () => {
             }
     
             //second handle game end and create new game
-            let endCurrentGame = realm.objects<Game>("Game").filtered("finished=0");
-            if(endCurrentGame[0] !== undefined) {
+            let endCurrentGame = realm.objects<Game>("Game").filtered("finished = 0");
+            const hasGameType = endCurrentGame.find(g => g.gameType === getWinningPlayer?.gameType);
+            if(hasGameType) {
+                let serialized = serializeObject(endCurrentGame[0]);
+                dispatch(updateGame({ ...serialized, finished: 1 }));
+                dispatch(addGamePlayed({ ...serialized, finished: 1 }));
+
                 realm.write(() => {
                     endCurrentGame[0].finished = 1;
                 })
+                
             }
-    
-            dispatch(addGamePlayed(endCurrentGame[0]));
-            dispatch(updateGame(endCurrentGame[0]));
             
             if(gameWins < 3) {
                 const createGame: Game = {
                     _id: Math.floor(Math.random() * 1000),
+                    gameType: winningPlayer[0].gameType,
                     player1Id: winningPlayer[0].id,
                     player1: winningPlayer[0].playerName,
                     player1Score: winningPlayer[0].wins,
@@ -131,7 +144,7 @@ const OnGoingGame = () => {
                 realm.write(() => {
                     realm.create("Game", createGame);
                 })
-                dispatch(updateGame(createGame));
+                dispatch(addGamePlayed(createGame));
             }
         }
     
@@ -155,7 +168,7 @@ const OnGoingGame = () => {
                 </TouchableOpacity>
 
                 {
-                    game.player2 !== "" && game.player2 !== undefined &&
+                    game.player2 !== "" && game.player2 !== undefined ?
                     <>
                         <TouchableOpacity onPress={() => handleGameEnd(game.player2Id)}>
                             <Card style={styles.cardStyle}>
@@ -173,7 +186,7 @@ const OnGoingGame = () => {
                                 </View>
                             </Card>
                         </TouchableOpacity>
-                    </>
+                    </> : null
                 }
                 
             </>

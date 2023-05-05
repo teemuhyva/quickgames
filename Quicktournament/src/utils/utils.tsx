@@ -4,7 +4,7 @@ export function currentDate() {
     return moment().format('dddd MM yyyy')
 }
 
-export function serializeObject(object) {
+export function serializeObject(object: any) {
     const p = JSON.stringify(object)
     return JSON.parse(p);
 }

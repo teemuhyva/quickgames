@@ -1,5 +1,6 @@
 export interface Game {
     _id: number;
+    gameType: string;
     player1Id?: number;
     player1?: string;
     player1Score?: number;

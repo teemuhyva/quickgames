@@ -6,7 +6,7 @@ import RealmContext from '../Realm/RealmConfig';
 import { Game, NewPlayer } from "../interfaces/interfaces";
 import { Player } from "../models/Player";
 import { useDispatch } from "react-redux";
-import { updateGame } from "../../store/reducers/gameSlice";
+import { addGamePlayed, updateGame } from "../../store/reducers/gameSlice";
 import { updatePlayer } from "../../store/reducers/playerSlice";
 import { serializeObject } from "../utils/utils";
 
@@ -23,26 +23,33 @@ const WaitingList = (props: WaitingListProps) => {
 
     const startGame = (player: NewPlayer) => {
         let playerUpdate = realm.objects<Player>("Player").filtered(`id=${player.id}`);
+        let game = realm.objects<Game>("Game").filtered(`finished = 0`);
+
         realm.write(() => {
             playerUpdate[0].onGoingGame = 1;
         })
 
         dispatch(updatePlayer(serializeObject(playerUpdate[0])));
         
-
-        let game = realm.objects<Game>("Game").filtered("finished=0");
-        if(game.length) {
+        const gameIndex = game.findIndex(g => g.gameType === player.gameType);
+        if(gameIndex >= 0) {
+            let serializeGame: Game = serializeObject(game[gameIndex]);
+            serializeGame = {
+                ...serializeGame,
+                player2: player.playerName,
+                player2Id: player.id,
+                player2Score: player.wins
+            }
+            dispatch(updateGame(serializeGame));
             realm.write(() => {
                 game[0].player2Id = player.id
                 game[0].player2 = player.playerName
                 game[0].player2Score = 0
             })
-
-            const serializeGame = serializeObject(game[0]);
-            dispatch(updateGame(serializeGame));
         } else {
             const createGame: Game = {
                 _id: Math.floor(Math.random() * 1000),
+                gameType: player.gameType,
                 player1Id: player.id,
                 player1: player.playerName,
                 player1Score: 0,
@@ -53,7 +60,7 @@ const WaitingList = (props: WaitingListProps) => {
                 realm.create('Game', createGame);
             })
 
-            dispatch(updateGame(createGame));
+            dispatch(addGamePlayed(createGame));
         }
     }
 

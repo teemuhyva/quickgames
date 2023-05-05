@@ -3,6 +3,7 @@ import { Realm } from '@realm/react';
 {/* This is only for statistic purposes */}
 export class Game {
     _id!: number;
+    gameType: string;
     player1Id?: number;
     player1?: string;
     player1Score?: number;
@@ -15,6 +16,7 @@ export class Game {
         name: "Game",
         properties: {
             _id: "int",
+            gameType: "string",
             player1Id: "int",
             player1: "string",
             player1Score: "int",
