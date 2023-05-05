@@ -18,7 +18,7 @@ Project
 
 MongoDb
   - [x] Store new player
-  - [ ] Store game where is 2 players
+  - [x] Store game where is 2 players
   - [ ] Update player name
   - [ ] Remove player from queue. Add confirmation ( will be swiped on screen )
   - [ ] Retrieve players on top ten list ( should it be shown based on total of wins or only those who will win 3 in row)
@@ -29,7 +29,6 @@ View and react native logic
   - [x] Add game that contains 2 players ( Game shown in Card component)
   - [x] Queue for ongoing game
   - [x] Queue for players waiting
-  - [ ] Horizontal line to separate above ( when configured for tablet )
   - [x] Navigation. (Bottom navigation with tabs)
 
 
