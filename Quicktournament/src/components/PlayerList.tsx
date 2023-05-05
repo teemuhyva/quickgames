@@ -3,16 +3,15 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { Button } from "react-native-elements";
 import { useDispatch, useSelector } from "react-redux";
-import { generateWaitingList, removePlayerFromWaitinList } from "../../store/reducers/playerSlice";
+import { generateWaitingList } from "../../store/reducers/playerSlice";
 import { RootState } from "../../store/store";
 import RealmContext from '../Realm/RealmConfig';
-import { Game, NewPlayer } from "../interfaces/interfaces";
+import { NewPlayer } from "../interfaces/interfaces";
 import { Player } from "../models/Player";
+import { serializeObject } from "../utils/utils";
 import OnGoingGame from "./OnGoingGame";
 import RegisterNewPlayer from "./RegisterPlayer";
 import WaitingList from "./WaitinList";
-import { updateGame } from "../../store/reducers/gameSlice";
-import { serializeObject } from "../utils/utils";
 
 
 const { useRealm } = RealmContext;
@@ -70,10 +69,6 @@ const PlayerList = ({ route }) => {
             players.push(serializeObject(player));
         });
         return players;
-    }
-
-    const addPlayerToGame = (player: NewPlayer) => {
-        dispatch(removePlayerFromWaitinList(player));
     }
 
     return (
