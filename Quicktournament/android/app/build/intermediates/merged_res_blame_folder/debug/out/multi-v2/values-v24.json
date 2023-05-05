@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\hyvartee\\Documents\\koulu\\quickgames\\Quicktournament\\android\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-v24\\values-v24.xml",
+            "outputFile": "D:\\JAMK\\Oma_react\\pooltournament\\Quicktournament\\android\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-v24\\values-v24.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\hyvartee\\.gradle\\caches\\transforms-3\\53122dfddfd0b682fe74c9823d5d0125\\transformed\\appcompat-1.4.1\\res\\values-v24\\values-v24.xml",
+                    "source": "C:\\Users\\teemu\\.gradle\\caches\\transforms-3\\8b8d6a9e5f1dea3e6c09afa3ee45b294\\transformed\\appcompat-1.4.1\\res\\values-v24\\values-v24.xml",
                     "from": {
                         "startLines": "2,3",
                         "startColumns": "4,4",
