@@ -3,26 +3,65 @@ import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { ListItem } from "react-native-elements";
 import RealmContext from '../Realm/RealmConfig';
-import { NewPlayer } from "../interfaces/interfaces";
+import { Game, NewPlayer } from "../interfaces/interfaces";
 import { Player } from "../models/Player";
+import { useDispatch } from "react-redux";
+import { addGamePlayed, updateGame } from "../../store/reducers/gameSlice";
+import { updatePlayer } from "../../store/reducers/playerSlice";
+import { serializeObject } from "../utils/utils";
 
 const { useRealm } = RealmContext;
 
 interface WaitingListProps {
-    waitingList: NewPlayer[],
-    addPlayerToGame: (player: NewPlayer) => void
+    waitingList: NewPlayer[]
 }
 
 const WaitingList = (props: WaitingListProps) => {
 
     const realm = useRealm();
+    const dispatch = useDispatch();
 
     const startGame = (player: NewPlayer) => {
-        let updatePlayer = realm.objects<Player>("Player").filtered(`id=${player.id}`);
+        let playerUpdate = realm.objects<Player>("Player").filtered(`id=${player.id}`);
+        let game = realm.objects<Game>("Game").filtered(`finished = 0`);
+
         realm.write(() => {
-            updatePlayer[0].onGoingGame = 1;
+            playerUpdate[0].onGoingGame = 1;
         })
-        props.addPlayerToGame(player);
+
+        dispatch(updatePlayer(serializeObject(playerUpdate[0])));
+        
+        const gameIndex = game.findIndex(g => g.gameType === player.gameType);
+        if(gameIndex >= 0) {
+            let serializeGame: Game = serializeObject(game[gameIndex]);
+            serializeGame = {
+                ...serializeGame,
+                player2: player.playerName,
+                player2Id: player.id,
+                player2Score: player.wins
+            }
+            dispatch(updateGame(serializeGame));
+            realm.write(() => {
+                game[0].player2Id = player.id
+                game[0].player2 = player.playerName
+                game[0].player2Score = 0
+            })
+        } else {
+            const createGame: Game = {
+                _id: Math.floor(Math.random() * 1000),
+                gameType: player.gameType,
+                player1Id: player.id,
+                player1: player.playerName,
+                player1Score: 0,
+                finished: 0
+            }
+
+            realm.write(() => {
+                realm.create('Game', createGame);
+            })
+
+            dispatch(addGamePlayed(createGame));
+        }
     }
 
     return (

@@ -6,11 +6,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { generateWaitingList, removePlayerFromWaitinList } from "../../store/reducers/playerSlice";
 import { RootState } from "../../store/store";
 import RealmContext from '../Realm/RealmConfig';
-import { NewPlayer } from "../interfaces/interfaces";
+import { Game, NewPlayer } from "../interfaces/interfaces";
 import { Player } from "../models/Player";
 import OnGoingGame from "./OnGoingGame";
 import RegisterNewPlayer from "./RegisterPlayer";
 import WaitingList from "./WaitinList";
+import { updateGame } from "../../store/reducers/gameSlice";
+import { serializeObject } from "../utils/utils";
 
 
 const { useRealm } = RealmContext;
@@ -21,16 +23,11 @@ const PlayerList = ({ route }) => {
 
     const players: NewPlayer[] = useSelector((state: RootState) => state.player.players);
 
-    const [onGoingGame, setOnGoingGame] = useState<NewPlayer[]>([]);
     const [isVisible, setIsVisible] = useState(false);
-    const [playersByGameType, setPlayersByGametype] = useState<NewPlayer[]>([])
+    const [playersByGameType, setPlayersByGametype] = useState<NewPlayer[]>([]);
 
     const dispatch = useDispatch();
     const realm = useRealm()
-
-    useEffect(() => {
-       fetchOngoingGame();
-    }, [])
 
     useEffect(() => {
         //deleteAll();
@@ -45,6 +42,8 @@ const PlayerList = ({ route }) => {
             const playerList = players.filter((p) => p.gameType === gameType && p.onGoingGame == 0 && p.lost == 0);
             setPlayersByGametype(playerList);
         } 
+         
+        
     }, [players])
 
     if (players === undefined) {
@@ -68,35 +67,21 @@ const PlayerList = ({ route }) => {
     
         const players: NewPlayer[] = [];
         playerList.map((player: NewPlayer) => {
-            const p = JSON.stringify(player)
-            players.push(JSON.parse(p));
+            players.push(serializeObject(player));
         });
         return players;
     }
 
-    const fetchOngoingGame = () => {
-        let playerList: any;
-        playerList = realm.objects<Player>("Player").filtered("gameType == $0 && onGoingGame == 1 && hasThreeWins == 0 && lost == 0", gameType);
-
-        const players: NewPlayer[] = [];
-        playerList.map((player: NewPlayer) => {
-            players.push(player);
-        });
-
-        setOnGoingGame(players);
-    }
-
     const addPlayerToGame = (player: NewPlayer) => {
         dispatch(removePlayerFromWaitinList(player));
-        setOnGoingGame([...onGoingGame, player]);
     }
 
     return (
         <View>
             <View style={styles.container}>
                 <View>
-                    <OnGoingGame game={onGoingGame} fetchOngoingGame={fetchOngoingGame}/>
-                    <WaitingList waitingList={playersByGameType} addPlayerToGame={addPlayerToGame}/>
+                    <OnGoingGame gameType={gameType}/>
+                    <WaitingList waitingList={playersByGameType} />
                     
                 </View>
                 <View style={styles.buttonsContainer}>

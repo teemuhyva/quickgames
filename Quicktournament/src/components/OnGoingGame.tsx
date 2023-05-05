@@ -1,58 +1,176 @@
 import { Avatar } from "@rneui/base";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Card, Text } from "react-native-elements";
-import { NewPlayer } from "../interfaces/interfaces";
+import { useDispatch, useSelector } from "react-redux";
+import { addGamePlayed, generateEndedGamesList, updateGame } from "../../store/reducers/gameSlice";
+import { RootState } from "../../store/store";
 import RealmContext from '../Realm/RealmConfig';
+import { NewPlayer } from "../interfaces/interfaces";
+import { Game } from "../models/Game";
 import { Player } from "../models/Player";
+import { updatePlayer } from "../../store/reducers/playerSlice";
+import { serializeObject } from "../utils/utils";
 
-interface OnGoingGameProps {
-    game: NewPlayer[],
-    fetchOngoingGame: () => void;
-}
 
 const { useRealm } = RealmContext;
 
-const OnGoingGame = ({game, fetchOngoingGame} : OnGoingGameProps) => {
-    
+const OnGoingGame = (gameType: any) => {
+    const games: Game[] = useSelector((state: RootState) => state.game.games);
+    const players: NewPlayer[] = useSelector((state: RootState) => state.player.players);
+
+    const [ongoingGame, setOnGoingGame] = useState<Game>();
+
+    const dispatch = useDispatch();
     const realm = useRealm();
 
-    const handleGameEnd = (player: NewPlayer) => {
-        
-        let winningPlayer = realm.objects<Player>("Player").filtered(`id=${player.id}`);
-        let getLosingPlayer = game.find(p => p.id !== player.id);
-        let losingPlayer = getLosingPlayer && realm.objects<Player>("Player").filtered(`id=${getLosingPlayer.id}`)
-        realm.write(() => {
-            const gameWins = winningPlayer[0].wins + 1;
-            if(losingPlayer) {
-                winningPlayer[0].wins = gameWins;
-                losingPlayer[0].onGoingGame = 0;
-                losingPlayer[0].lost = 1;
+    useEffect(() => {
+        if(games.length) {
+            const game = games.filter(game => game.finished === 0 && game.player1 !== "" && game.gameType === gameType["gameType"]);
+            if(game.length) {
+                setOnGoingGame(game[0]);
+            } else {
+                setOnGoingGame(undefined);
             }
+        } else {
+            const fetchGames = fetchOngoingGame();
+            if(fetchGames !== undefined) {
+                dispatch(generateEndedGamesList(fetchGames));
+            } else {
+                setOnGoingGame(undefined);
+            }
+        }
 
+    }, [games]);
+    const fetchOngoingGame = () => {
+        let allGames: any
+        allGames = realm.objects<Game>("Game");
+        
+        const games: Game[] = [];
+        allGames.map((game: Game) => {
+            games.push(serializeObject(game));
+        })
+
+        return games;
+    }
+
+    const NoGamesGoing = () => {
+        return (
+            <View>
+                <Text>Ei pelejä käynnissä</Text>
+            </View>
+        )
+    }
+
+    const CurrentGame = ({game}) => {
+
+        const handleGameEnd = (playerId: number = 0) => {
+
+            //first handle playerlist for winning and losing players
+            let winningPlayer = realm.objects<Player>("Player").filtered(`id=${playerId}`);
+            let losingPlayerId = game &&  game.player1Id !== playerId ? players.find(p => p.id === game.player1Id) : players.find(p => p.id === game.player2Id);
+            let losingPlayer = losingPlayerId && realm.objects<Player>("Player").filtered(`id=${losingPlayerId.id}`);
+    
+            const gameWins = winningPlayer[0].wins + 1;
+    
+            realm.write(() => {
+                winningPlayer[0].wins = gameWins;
+            })
+    
+            realm.write(() => {
+                if(losingPlayer) {
+                    losingPlayer[0].lost = 1;
+                }
+            })
+    
+            let getWinningPlayer = players.find(p => p.id === playerId);
+            if(getWinningPlayer !== undefined) {
+                const updateWinning = {
+                    ...getWinningPlayer,
+                    wins: gameWins
+                }
+                dispatch(updatePlayer(updateWinning));
+            }
+    
+            if(losingPlayer !== undefined) {
+                let getLosingPlayer = players.find(p => p.id === losingPlayerId?.id);
+                if(getLosingPlayer !== undefined) {
+                    const updateLosing = {
+                        ...getLosingPlayer,
+                        lost: 1,
+                        onGoingGame: 0
+                    }
+                    dispatch(updatePlayer(updateLosing));
+                }
+            }
+    
             {/* if only one player and they will drop out remove from game */}
-            if(game.length < 2) {
-                winningPlayer[0].lost = 1;
+            if(game.player2 === "" || game.player2 === undefined) {
+                realm.write(() => {
+                    winningPlayer[0].lost = 1;
+                })
             }
             {/* If player gets 3 wins they will be removed from game*/}
             if(gameWins >= 3) {
-                winningPlayer[0].hasThreeWins = 1;
+                realm.write(() => {
+                    winningPlayer[0].hasThreeWins = 1;
+                })
             }
-        });
+    
+            //second handle game end and create new game
+            let endCurrentGame = realm.objects<Game>("Game").filtered("finished = 0");
+            const hasGameType = endCurrentGame.find(g => g.gameType === getWinningPlayer?.gameType);
+            if(hasGameType) {
+                let serialized = serializeObject(endCurrentGame[0]);
+                dispatch(updateGame({ ...serialized, finished: 1 }));
+                dispatch(addGamePlayed({ ...serialized, finished: 1 }));
 
-        fetchOngoingGame();
-    }
+                realm.write(() => {
+                    endCurrentGame[0].finished = 1;
+                })
+                
+            }
+            
+            if(gameWins < 3) {
+                const createGame: Game = {
+                    _id: Math.floor(Math.random() * 1000),
+                    gameType: winningPlayer[0].gameType,
+                    player1Id: winningPlayer[0].id,
+                    player1: winningPlayer[0].playerName,
+                    player1Score: winningPlayer[0].wins,
+                    finished: 0
+                }
+        
+                realm.write(() => {
+                    realm.create("Game", createGame);
+                })
+                dispatch(addGamePlayed(createGame));
+            }
+        }
+    
+        return (
+            <>
+                <TouchableOpacity onPress={() => handleGameEnd(game.player1Id)}>
+                    <Card style={styles.cardStyle}>
+                        <Card.Title>
+                            <Avatar rounded 
+                                    icon={{
+                                    name: 'person-outline', 
+                                    type: 'material', 
+                                    size: 26}}
+                                    containerStyle={{ backgroundColor: '#c2c2c2'}}/>
+                        </Card.Title>
+                        <View style={styles.gameinfoWrapper}>
+                            <Text>{game.player1}</Text>
+                            <Text>Voitot: { ongoingGame?.player1Score}</Text>
+                        </View>
+                    </Card>
+                </TouchableOpacity>
 
-    return (
-        <View style={styles.ongoingGameContainer}>
-            {
-                game.length < 1 ? (
-                    <View>
-                        <Text>Ei pelejä käynnissä</Text>
-                    </View>
-                ) : game.map((player, i) => {
-                    return (
-                        <TouchableOpacity key={i} onPress={() => handleGameEnd(player)}>
+                {
+                    game.player2 !== "" && game.player2 !== undefined ?
+                    <>
+                        <TouchableOpacity onPress={() => handleGameEnd(game.player2Id)}>
                             <Card style={styles.cardStyle}>
                                 <Card.Title>
                                     <Avatar rounded 
@@ -63,13 +181,22 @@ const OnGoingGame = ({game, fetchOngoingGame} : OnGoingGameProps) => {
                                             containerStyle={{ backgroundColor: '#c2c2c2'}}/>
                                 </Card.Title>
                                 <View style={styles.gameinfoWrapper}>
-                                    <Text>{player.playerName}</Text>
-                                    <Text>Voitot: {player.wins}</Text>
+                                    <Text>{game.player2}</Text>
+                                    <Text>Voitot: {ongoingGame?.player2Score}</Text>
                                 </View>
                             </Card>
                         </TouchableOpacity>
-                    )
-                })
+                    </> : null
+                }
+                
+            </>
+        )
+    }
+
+    return (
+        <View style={styles.ongoingGameContainer}>
+            {
+                !ongoingGame || ongoingGame.player1 === "" ? <NoGamesGoing /> : <CurrentGame game={ongoingGame}/>             
             }
         </View>
     )

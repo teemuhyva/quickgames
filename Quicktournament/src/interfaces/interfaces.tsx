@@ -1,21 +1,19 @@
-export interface CurrentGame {
-    id: number;
-    player1: string;
-    player2: string;
-    finished: boolean;
-}
-
 export interface Game {
-    id: string;
-    player1: string;
-    player2: string;
-    win: string
+    _id: number;
+    gameType: string;
+    player1Id?: number;
+    player1?: string;
+    player1Score?: number;
+    player2Id?: number;
+    player2?: string;
+    player2Score?: number;
+    finished: number;
 }
 
 export interface NewPlayer {
     id: number;
     playerName: string;
-    gameType: GameType;
+    gameType: string;
     regTime: string
     wins: number;
     lost: number;
@@ -27,7 +25,12 @@ export interface Players {
     players: NewPlayer[]
 }
 
-export type GameType = 'billiard' | 'snooker' | undefined;
+export interface Games {
+    games: Game[],
+    game: Game
+}
 
 const AddPlayer: string = "addplayer"
+const UpdateGame: string = "updategame"
 export { AddPlayer }
+export { UpdateGame }

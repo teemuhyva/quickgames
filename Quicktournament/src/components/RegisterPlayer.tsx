@@ -3,7 +3,7 @@ import { Button, ButtonGroup, Input } from "@rneui/base";
 import { format } from "date-fns";
 import React, { useState } from "react";
 import { Modal, StyleSheet, View } from "react-native";
-import { GameType, NewPlayer } from "../interfaces/interfaces";
+import { NewPlayer } from "../interfaces/interfaces";
 import { Player } from "../models/Player";
 import RealmContext from "../Realm/RealmConfig"
 import { useDispatch } from "react-redux";
@@ -14,7 +14,7 @@ const { useRealm } = RealmContext;
 const RegisterNewPlayer = ({ visible }) => {
 
     const [playerName, setPlayerName] = useState('');
-    const [game, setGame] = useState<GameType>('billiard');
+    const [game, setGame] = useState('billiard');
     const [selectedIndex, setSelectedIndex] = useState(0);
 
     const realm = useRealm();
@@ -31,7 +31,7 @@ const RegisterNewPlayer = ({ visible }) => {
     }
 
     const createPlayer = () => {
-        const type: GameType = game;
+        const type: string = game;
         const player: NewPlayer = {
             id: getOrCreatePlayerId(),
             playerName: playerName,

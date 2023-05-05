@@ -13,6 +13,15 @@ export const playersSlice = createSlice({
         add: (state: Players, action: PayloadAction<NewPlayer>) => {
             state.players.push(action.payload);       
         },
+        updatePlayer: (state: Players, action: PayloadAction<NewPlayer>) => {
+            state.players.map(p => {
+                if(p.id === action.payload.id) {
+                    p.wins = action.payload.wins;
+                    p.lost = action.payload.lost;
+                    p.onGoingGame = action.payload.onGoingGame;
+                }
+            })
+        },
         generateWaitingList: (state, action: PayloadAction<NewPlayer[]>) => {
             action.payload.map(p => {
                 state.players.push(p);
@@ -27,5 +36,5 @@ export const playersSlice = createSlice({
     }
 })
 
-export const { add, generateWaitingList, purgeall, removePlayerFromWaitinList } = playersSlice.actions;
+export const { add, updatePlayer, generateWaitingList, purgeall, removePlayerFromWaitinList } = playersSlice.actions;
 export default playersSlice.reducer;
