@@ -6,7 +6,7 @@ import RealmContext from '../Realm/RealmConfig';
 import { Game, NewPlayer } from "../interfaces/interfaces";
 import { Player } from "../models/Player";
 import { useDispatch } from "react-redux";
-import { addGamePlayed, updateGame } from "../../store/reducers/gameSlice";
+import { addGame, updateGame } from "../../store/reducers/gameSlice";
 import { updatePlayer } from "../../store/reducers/playerSlice";
 import { serializeObject } from "../utils/utils";
 
@@ -40,7 +40,7 @@ const WaitingList = (props: WaitingListProps) => {
                 player2Id: player.id,
                 player2Score: player.wins
             }
-            dispatch(updateGame(serializeGame));
+            dispatch(updateGame({game: serializeGame}));
             realm.write(() => {
                 game[0].player2Id = player.id
                 game[0].player2 = player.playerName
@@ -60,7 +60,7 @@ const WaitingList = (props: WaitingListProps) => {
                 realm.create('Game', createGame);
             })
 
-            dispatch(addGamePlayed(createGame));
+            dispatch(addGame(createGame));
         }
     }
 

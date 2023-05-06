@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { Card, Text } from "react-native-elements";
 import { useDispatch, useSelector } from "react-redux";
-import { addGamePlayed, updateGame } from "../../store/reducers/gameSlice";
+import { addGame, updateGame } from "../../store/reducers/gameSlice";
 import { updatePlayer } from "../../store/reducers/playerSlice";
 import { RootState } from "../../store/store";
 import RealmContext from '../Realm/RealmConfig';
@@ -103,9 +103,16 @@ const OnGoingGame = (gameType: any) => {
             let endCurrentGame = realm.objects<Game>("Game").filtered("finished = 0");
             const hasGameType = endCurrentGame.find(g => g.gameType === getWinningPlayer?.gameType);
             if(hasGameType) {
-                let serialized = serializeObject(endCurrentGame[0]);
-                dispatch(updateGame({ ...serialized, finished: 1 }));
-                dispatch(addGamePlayed({ ...serialized, finished: 1 }));
+                let serialized: Game = serializeObject(endCurrentGame[0]);
+                if(hasGameType.player1 === serialized.player1) {
+                    serialized = { ...serialized, player1Score: 1 }
+                } else {
+                    serialized = { ...serialized, player2Score: 1 }
+                }
+
+                serialized = { ...serialized, finished: 1}
+                
+                dispatch(updateGame({game: serialized}));
 
                 realm.write(() => {
                     endCurrentGame[0].finished = 1;
@@ -126,7 +133,7 @@ const OnGoingGame = (gameType: any) => {
                 realm.write(() => {
                     realm.create("Game", createGame);
                 })
-                dispatch(addGamePlayed(createGame));
+                dispatch(addGame(createGame));
             }
         }
     

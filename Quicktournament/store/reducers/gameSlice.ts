@@ -18,22 +18,15 @@ export const gameSlice = createSlice({
     name: UpdateGame,
     initialState: initialState,
     reducers: {
-        addGamePlayed: (state: Games, action: PayloadAction<Game>) => {
+        addGame: (state: Games, action: PayloadAction<Game>) => {
             state.games.push(action.payload);
         },
-        updateGame: (state: Games, action: PayloadAction<Game>) => {
-            const updatedGame = state.games.map(game => {
-                if(game._id === action.payload._id) {
-                    return { ...game, ...action.payload}
-                } else {
-                    return game;
-                }
-            })
-
-            return {
-                ...state,
-                games: updatedGame
-            };       
+        updateGame: (state: Games, action: PayloadAction<{ game: Game}>) => {
+            const { game } = action.payload;
+            const index = state.games.findIndex((ele) => ele._id === game._id)
+            if(index !== -1) {
+                state.games[index] = game
+            }
         },
         generateEndedGamesList: (state, action: PayloadAction<Game[]>) => {
             action.payload.map(p => {
@@ -43,5 +36,5 @@ export const gameSlice = createSlice({
     }
 })
 
-export const { addGamePlayed, updateGame, generateEndedGamesList } = gameSlice.actions;
+export const { addGame, updateGame, generateEndedGamesList } = gameSlice.actions;
 export default gameSlice.reducer;
