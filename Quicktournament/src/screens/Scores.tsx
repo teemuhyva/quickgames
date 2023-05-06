@@ -8,10 +8,15 @@ import { RootState } from "../../store/store";
 const Scores = () => {
 
     const games: Game[] = useSelector((state: RootState) => state.game.games);
-    
+    const [finishedGames, setFinishedGames] = useState<Game[]>([]);
+
+    useEffect(() => {
+        setFinishedGames(games.filter(game => game.finished === 1));
+    }, [games])
+
     return (
         <View style={styles.container}>
-            {games.map((game, i) => (
+            {finishedGames.map((game, i) => (
                 <ListItem key={i} bottomDivider  containerStyle={styles.listItemContainer}>
                     <ListItem.Content style={{ flex: 1 }}>
                         <Text style={styles.playerName}>Nimi: {game.player1}</Text>
