@@ -8,26 +8,58 @@ import { RootState } from "../../store/store";
 const Scores = () => {
 
     const games: Game[] = useSelector((state: RootState) => state.game.games);
-    const [finishedGames, setFinishedGames] = useState<Game[]>([]);
+    const [finishedBilliard, setFinishedBilliard] = useState<Game[]>([]);
+    const [finishedSnooker, setFinishedSnooker] = useState<Game[]>([]);
 
     useEffect(() => {
-        setFinishedGames(games.filter(game => game.finished === 1));
+        setFinishedBilliard(games.filter(game => game.finished === 1 && game.gameType === 'billiard'));
+        setFinishedSnooker(games.filter(game => game.finished === 1 && game.gameType === 'snooker'));
     }, [games])
 
     return (
-        <View style={styles.container}>
-            {finishedGames.map((game, i) => (
-                <ListItem key={i} bottomDivider  containerStyle={styles.listItemContainer}>
-                    <ListItem.Content style={{ flex: 1 }}>
-                        <Text style={styles.playerName}>Nimi: {game.player1}</Text>
-                        <Text style={styles.playerScore}>Voitot: {game.player1Score}</Text>
-                    </ListItem.Content>
-                    <ListItem.Content style={{ flex: 1 }}>
-                        <Text style={styles.playerName}>Nimi: {game.player2}</Text>
-                        <Text style={styles.playerScore}>Voitot: {game.player2Score}</Text>
-                    </ListItem.Content>
-                </ListItem>
-            ))}
+        <View style={{ flex: 2 }}> 
+            <>
+                <Text style={styles.title}>Biljardi</Text>
+                {
+                    !finishedBilliard.length && <View style={styles.container}><Text>Pelejä ei ole pelattu</Text></View>
+                }
+                <View style={styles.container}>
+                    {finishedBilliard.map((game, i) => {
+                        return game.gameType === 'billiard' &&
+                            <ListItem key={i} bottomDivider  containerStyle={styles.listItemContainer}>
+                                <ListItem.Content style={{ flex: 1 }}>
+                                    <Text style={styles.playerName}>Nimi: {game.player1}</Text>
+                                    <Text style={styles.playerScore}>Voitot: {game.player1Score}</Text>
+                                </ListItem.Content>
+                                <ListItem.Content style={{ flex: 1 }}>
+                                    <Text style={styles.playerName}>Nimi: {game.player2}</Text>
+                                    <Text style={styles.playerScore}>Voitot: {game.player2Score}</Text>
+                                </ListItem.Content>
+                            </ListItem>
+                     })}
+                </View>
+            </>
+            <>
+                <Text style={styles.title}>Snooker</Text>
+                {
+                    !finishedSnooker.length && <View style={styles.container}><Text>Pelejä ei ole pelattu</Text></View>
+                }
+                <View style={styles.container}>
+                    {finishedSnooker.map((game, i) => {
+                        return game.gameType === 'snooker' && <ListItem key={i} bottomDivider  containerStyle={styles.listItemContainer}>
+                        <ListItem.Content style={{ flex: 1 }}>
+                            <Text style={styles.playerName}>Nimi: {game.player1}</Text>
+                            <Text style={styles.playerScore}>Voitot: {game.player1Score}</Text>
+                        </ListItem.Content>
+                        <ListItem.Content style={{ flex: 1 }}>
+                            <Text style={styles.playerName}>Nimi: {game.player2}</Text>
+                            <Text style={styles.playerScore}>Voitot: {game.player2Score}</Text>
+                        </ListItem.Content>
+                         </ListItem>
+                    })}
+                </View>
+            </>
+            
         </View>
     )
 }
@@ -38,14 +70,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'white',
+        minHeight: 350
       },
       listItemContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
-        marginVertical: 5,
-        paddingVertical: 10,
-        paddingHorizontal: 20,
+        marginVertical: 2,
         backgroundColor: '#f5f5f5',
         borderRadius: 10,
         width: '90%',
@@ -58,6 +88,13 @@ const styles = StyleSheet.create({
       playerScore: {
         fontSize: 16,
         color: '#333',
+      },
+      title: {
+        fontStyle: 'normal',
+        fontSize: 20,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        backgroundColor: 'transparent'
       },
 });
 

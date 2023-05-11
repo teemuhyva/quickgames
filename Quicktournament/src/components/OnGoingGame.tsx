@@ -104,7 +104,7 @@ const OnGoingGame = (gameType: any) => {
             const hasGameType = endCurrentGame.find(g => g.gameType === getWinningPlayer?.gameType);
             if(hasGameType) {
                 let serialized: Game = serializeObject(endCurrentGame[0]);
-                if(hasGameType.player1 === serialized.player1) {
+                if(hasGameType.player1 === getWinningPlayer?.playerName) {
                     serialized = { ...serialized, player1Score: 1 }
                 } else {
                     serialized = { ...serialized, player2Score: 1 }
